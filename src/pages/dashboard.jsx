@@ -26,6 +26,7 @@ function Dashboard() {
         </React.Fragment>
     );
 
+
     const card2 = (
         <React.Fragment>
             <CardContent>
