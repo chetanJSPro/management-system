@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function Topnav() {
     return (
-        <nav className="navbar navbar-expand-lg bg-body-tertiary">
+        <nav className="navbar shadow-lg navbar-expand-lg bg-body-tertiary">
             <div className="container-fluid">
                 <button
                     className="navbar-toggler"
@@ -36,7 +36,7 @@ export default function Topnav() {
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="#">Add students</a></li>
-                                <li><a class="dropdown-item" href="#">check attendence</a></li>
+                                <li><a class="dropdown-item" href="/check-attendence">check attendence</a></li>
                                 <li><a class="dropdown-item" href="#">marks</a></li>
                             </ul>
                         </li>

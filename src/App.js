@@ -14,6 +14,7 @@ import AddAttendence from './pages/addAttendence';
 import CalendarPage from './components/calendar';
 import Login from './pages/login';
 import Topnav from './components/topnav';
+import Studentcheckatt from './pages/studentcheckatt';
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
       <div>
         <Routes>
           <Route path="/student-details" element={<StudentDetails />} />
+          <Route path="/check-attendence" element={<Studentcheckatt />} />
           <Route path="/nav" element={<Topnav />} />
           <Route path="/" element={<Login />} />
           <Route path="/calendar" element={<CalendarPage />} />

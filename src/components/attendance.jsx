@@ -46,7 +46,7 @@ function Attendance() {
     });
 
     useEffect(() => {
-        localStorage.setItem('tableData', JSON.stringify(tableData));
+        localStorage.setItem('studenttable', JSON.stringify(tableData));
     }, [tableData]);
 
     const handleChange = (e) => {
@@ -92,12 +92,12 @@ function Attendance() {
         <div className='dashboard-container'>
             <div className='row'>
                 <div className='col-3'>
-                    <Nav/>
+                    <Nav />
                 </div>
                 <div className='col-9'>
                     <Box sx={{ flexGrow: 1 }} my={8} p={2}>
-                         <h1>   Attendance Form</h1>
-                       
+                        <h1>   Attendance Form</h1>
+
                         <Paper elevation={3} sx={{ p: 3 }}>
                             <form onSubmit={handleSubmit}>
                                 <Grid container spacing={3}>

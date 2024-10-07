@@ -1,11 +1,16 @@
 .dashboard-container {
   display: flex;
-  width: 100%;
+  width: 75%;
+}
+
+body,
+html {
+  height: 100%;
 }
 
 .sidebar {
-  width: 275px;
-  height: 100vh;
+  width: 25%;
+  height: 120vh;
   background-color: #343a40;
   color: white;
   display: flex;
@@ -25,18 +30,23 @@
   padding: 0;
 }
 
-.sidebar-menu li {
-  padding: 15px 20px;
-}
-
-.sidebar-menu li a {
-  color: rgb(255, 255, 255);
+.sidebar-menu a {
+  display: block;
   text-decoration: none;
 }
 
-.sidebar-menu li:hover {
+.sidebar-menu li {
+  padding: 25px 20px;
+  height: 80px;
+}
+
+.sidebar-menu a:hover {
   background-color: #bbbbbb;
   color: #000000;
+}
+
+.sidebar-components {
+  height: 80px;
 }
 
 .sidebar-components {
@@ -81,15 +91,6 @@
   display: flex;
   gap: 20px;
   width: 300px;
-}
-
-.card {
-  flex: 1;
-  padding: 20px;
-  background-color: black;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin: 5px;
 }
 
 .card h3 {
