@@ -1,6 +1,6 @@
 import React from 'react'
-import "../styles/dashboard.css"
-import Nav from "../components/nav"
+import "../styles/dashboard.css";
+import Layout from '../components/layout';
 function Readattendence() {
 
     var students = [
@@ -43,13 +43,10 @@ function Readattendence() {
         }
     ];
     return (
-        <div className='container-fluid'>
-            <div className='row'>
-                <div className=' sidebar pe-5'>
-                    <Nav />
-                </div>
-                <table className='col-8 mt-2'>
-                    <thead>
+        <Layout>
+            <section className='col-8 pt-5'>
+                <table className='table table-hover table-responsive'>
+                    <thead className='table-light'>
                         <tr>
                             <th scope="col">name</th>
                             <th scope="col">rollno</th>
@@ -69,7 +66,7 @@ function Readattendence() {
                                         {student.rollno}
                                     </td>
                                     <td scope="col">
-                                        {student.present === "true" ? "yes" : <p className='red'>No</p>}
+                                        {student.present === "true" ? "yes" : <div className='red'>No</div>}
                                     </td>
                                     <td scope="col">{student.class}</td>
                                 </tr>
@@ -77,8 +74,8 @@ function Readattendence() {
                         }
                     </tbody>
                 </table>
-            </div>
-        </div>
+            </section>
+        </Layout >
     )
 
 }

@@ -67,7 +67,7 @@ function AddAttendence() {
                 <p>Today: {fulldate}</p>
                 <p>Teacher:</p>
                 <table className='table table-hover table-responsive'>
-                    <thead class="table-light">
+                    <thead className="table-light">
                         <tr className='text-uppercase'>
                             <th scope="col">name</th>
                             <th scope="col">rollno</th>
@@ -87,14 +87,14 @@ function AddAttendence() {
                                         {student.rollno}
                                     </td>
                                     <td scope="col">
-                                        <div class="form-check form-check-inline">
-                                            <label class="form-check-label p-2" for="flexRadioDefault1">
+                                        <div className="form-check form-check-inline">
+                                            <label className="form-check-label p-2" for="flexRadioDefault1">
                                                 <input type="radio" value={student.name} name={student.id} required style={{ height: 20, width: 20, verticalAlign: "middle" }} />
                                                 Yes
                                             </label>
                                         </div>
-                                        <div class="form-check form-check-inline">
-                                            <label class="form-check-label p-2" for="flexRadioDefault2">
+                                        <div className="form-check form-check-inline">
+                                            <label className="form-check-label p-2" for="flexRadioDefault2">
                                                 <input type="radio" name={student.id} required style={{ height: 20, width: 20, verticalAlign: "middle" }} />
                                                 No
                                             </label>
@@ -106,7 +106,7 @@ function AddAttendence() {
                         }
                     </tbody>
                 </table>
-                <button type="submit" className='btn btn-lg btn-success text-uppercase'>submit</button>
+                <button onClick={submitForm} type="submit" className='btn btn-lg btn-success text-uppercase'>submit</button>
             </form>
         </Layout >
     )

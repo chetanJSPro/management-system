@@ -3,6 +3,12 @@ import "../styles/login.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom'
+import { FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+
+
+
 export default function Login() {
     const navigate = useNavigate()
     const [error, seterror] = useState();
@@ -94,7 +100,6 @@ export default function Login() {
         }
         else {
             seterror("username in not correct");
-            errormessage.style.color = "red";
         }
         setFormValues(formObject);
         e.preventDefault();
@@ -110,6 +115,18 @@ export default function Login() {
         const val = e.target.value;
         setpassVal(val);
     }
+
+    const [showPassword, setShowPassword] = React.useState(false);
+
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
+
+    const handleMouseUpPassword = (event) => {
+        event.preventDefault();
+    };
     return (
         <section className='login-section'>
             <div className='row no-gutters'>
@@ -129,22 +146,44 @@ export default function Login() {
                                 <input type="radio" className="btn-check" name="logintype" id="btnradio3" value={'teacher'} onChange={e => handleLoginType(e)} autoComplete="off" />
                                 <label className="btn btn-outline-primary" htmlFor="btnradio3">Teacher</label>
                             </div>
-                            <input
-                                className='form-control mb-2'
-                                onChange={Handleinput}
-                                type="text"
+                            <TextField
+                                fullWidth
                                 id="username"
                                 name="username"
-                                placeholder="Username"
+                                label="UserName"
+                                className="form-control mb-2"
+                                onChange={Handleinput}
+                                sx={{
+                                    "& .MuiOutlinedInput-root": {
+                                        borderRadius: '12px',
+                                    },
+                                }}
                             />
-                            <input
-                                className='form-control'
-                                onChange={HandlePass}
-                                type="password"
-                                id="userpwd"
-                                name="userpwd"
-                                placeholder="password"
-                            />
+                            <FormControl sx={{ width: '100%' }} fullWidth variant="outlined">
+                                <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                                <OutlinedInput
+                                    type={showPassword ? 'text' : 'password'}
+                                    sx={{ borderRadius: '12px' }}
+                                    onChange={HandlePass}
+                                    id="userpwd"
+                                    name="userpwd"
+                                    endAdornment={
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label={showPassword ? 'hide the password' : 'display the password'}
+                                                onClick={handleClickShowPassword}
+                                                onMouseDown={handleMouseDownPassword}
+                                                onMouseUp={handleMouseUpPassword}
+                                                edge="end"
+                                            >
+                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    }
+                                    label="Password"
+                                />
+                            </FormControl>
+
 
                             <button className='sub' type="submit">Log In</button>
                         </form>

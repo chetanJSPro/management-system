@@ -15,6 +15,7 @@ import CalendarPage from './components/calendar';
 import Login from './pages/login';
 import Topnav from './components/topnav';
 import Studentcheckatt from './pages/studentcheckatt';
+import Welcome from './pages/welcome';
 
 function App() {
 
@@ -27,6 +28,7 @@ function App() {
           <Route path="/student-details" element={<StudentDetails />} />
           <Route path="/check-attendence" element={<Studentcheckatt />} />
           <Route path="/nav" element={<Topnav />} />
+          <Route path="/welcome" element={<Welcome />} />
           <Route path="/" element={<Login />} />
           <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/studentfees" element={<StudentFees />}>

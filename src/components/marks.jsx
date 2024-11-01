@@ -2,6 +2,75 @@ import React, { useState } from 'react'
 import Layout from './layout'
 
 export default function Marks() {
+  var students = [
+    {
+      "id": "1",
+      "name": "chetan sharma",
+      "rollno": 17,
+      "class": "cse",
+      "sem": "3rd",
+      "sessional1marks": "23",
+      "sessional2marks": "12",
+      "sessional3marks": "4",
+      "finalMarks": "1000"
+    },
+    {
+      "id": "2",
+      "name": "Jatin sharma",
+      "rollno": 22,
+      "branch": "cse",
+      "sem": "2nd",
+      "sessional1marks": "3",
+      "sessional2marks": "21",
+      "sessional3marks": "25",
+      "finalMarks": "655"
+    },
+    {
+      "id": "3",
+      "name": "Mohan ram",
+      "rollno": 34,
+      "branch": "cse",
+      "sem": "1st",
+      "sessional1marks": "13",
+      "sessional2marks": "2",
+      "sessional3marks": "24",
+      "finalMarks": "790"
+    },
+    {
+      "id": "4",
+      "name": "Ramnath",
+      "rollno": 52,
+      "branch": "cse",
+      "sem": "4th",
+      "sessional1marks": "2",
+      "sessional2marks": "1",
+      "sessional3marks": "14",
+      "finalMarks": "450"
+    },
+
+    {
+      "id": "5",
+      "name": "Ram Lal",
+      "rollno": 21,
+      "branch": "cse",
+      "sem": "3rd",
+      "sessional1marks": "28",
+      "sessional2marks": "29",
+      "sessional3marks": "30",
+      "finalMarks": "1200"
+    },
+    {
+      "id": "6",
+      "name": "Raghav sharma",
+      "rollno": 45,
+      "branch": "cse",
+      "sem": "3rd",
+      "sessional1marks": "15",
+      "sessional2marks": "8",
+      "sessional3marks": "25",
+      "finalMarks": "940"
+    }
+  ];
   const sem1subjects = [
     { "id": "1", "subject": "English and Communication Skills - I" },
     { "id": "2", "subject": "Applied Mathematics - I" },
@@ -93,8 +162,8 @@ export default function Marks() {
       <div className='col-6 col-sm-8 mt-5 ms-5'>
         <div className='row'>
           <h1 className='col-12 mb-5'>Check Your Attendence</h1>
-          <div class="form-floating col-sm-6">
-            <select class="form-select" aria-label="Default select example" onChange={handleChange} >
+          <div className="form-floating col-sm-6">
+            <select className="form-select" aria-label="Default select example" onChange={handleChange} >
               <option selected>-----</option>
               <option value="1st">1st</option>
               <option value="2nd">2nd</option>
@@ -105,8 +174,8 @@ export default function Marks() {
             </select>
             <label className='ms-2' for="floatingInput">Semester</label>
           </div>
-          <div class="form-floating col-sm-6">
-            <select class="form-select" aria-label="Default select example">
+          <div className="form-floating col-sm-6">
+            <select className="form-select" aria-label="Default select example">
               <option selected>-----</option>
               <option value="sessional1">sessional1</option>
               <option value="sessional2">sessional2</option>
@@ -115,7 +184,7 @@ export default function Marks() {
             </select>
             <label className='ms-2' for="floatingInput">Exam type</label>
           </div>
-          <button className='btn btn-dark w-auto mt-5' onClick={table} >Check Attendance</button>
+          <button className='btn btn-dark w-auto mt-5' onClick={table} >Check Marks</button>
           <h3 className='mt-5 mb-5'>Attendence</h3>
           <table className='table table-hover'>
             <thead>

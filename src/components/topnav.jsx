@@ -30,14 +30,14 @@ export default function Topnav() {
                                 Add attendance
                             </a>
                         </li>
-                        <li class="nav-item dropdown col-3">
-                            <a class="nav-link active dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <li className="nav-item dropdown col-3">
+                            <a className="nav-link active dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Other options
                             </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Add students</a></li>
-                                <li><a class="dropdown-item" href="/check-attendence">check attendence</a></li>
-                                <li><a class="dropdown-item" href="#">marks</a></li>
+                            <ul className="dropdown-menu">
+                                <li><a className="dropdown-item" href="#">Add students</a></li>
+                                <li><a className="dropdown-item" href="/check-attendence">check attendence</a></li>
+                                <li><a className="dropdown-item" href="#">marks</a></li>
                             </ul>
                         </li>
                     </ul>

@@ -68,16 +68,16 @@ function Dashboard() {
 
     return (
         <Layout>
-            <div class="dashboard-container">
-                <div class="main-content">
-                    <header class="topbar">
+            <div className="dashboard-container">
+                <div className="main-content">
+                    <header className="topbar">
                         <h1>Dashboard</h1>
-                        <div class="user-info">
+                        <div className="user-info">
                             <p>Welcome, User</p>
                             <a href="/">Logout</a>
                         </div>
                     </header>
-                    <div class="content">
+                    <div className="content">
                         <Box sx={{ flexGrow: 1 }}>
                             <Grid container spacing={2}>
 
@@ -100,7 +100,7 @@ function Dashboard() {
                     </div>
                     <table className='table'>
                         <thead>
-                            <tr class="table-headers">
+                            <tr className="table-headers">
                                 <th>Name</th>
                                 <th>Number</th>
                                 <th>Market rate</th>
@@ -112,58 +112,58 @@ function Dashboard() {
                         <tbody>
                             <tr>
                                 <td>PlayCo Group Universal Flex</td>
-                                <th class="mobile-header">Number</th><td>2489</td>
-                                <th class="mobile-header">Market rate</th><td>€12.35</td>
+                                <th className="mobile-header">Number</th><td>2489</td>
+                                <th className="mobile-header">Market rate</th><td>€12.35</td>
                             </tr>
                             <tr>
                                 <td>House of Dedgeny EUR Flex</td>
-                                <th class="mobile-header">Number</th><td>5478</td>
-                                <th class="mobile-header">Market rate</th><td>€42.68	</td>
+                                <th className="mobile-header">Number</th><td>5478</td>
+                                <th className="mobile-header">Market rate</th><td>€42.68	</td>
                             </tr>
                             <tr>
                                 <td>PlayCo Group Local</td>
-                                <th class="mobile-header">Number</th><td>123</td>
-                                <th class="mobile-header">Market rate</th><td>€147.36</td>
+                                <th className="mobile-header">Number</th><td>123</td>
+                                <th className="mobile-header">Market rate</th><td>€147.36</td>
                             </tr>
                             <tr>
                                 <td>PlayCo Group Low</td>
-                                <th class="mobile-header">Number</th><td>5477</td>
-                                <th class="mobile-header">Market rate</th><td>€147.00</td>
+                                <th className="mobile-header">Number</th><td>5477</td>
+                                <th className="mobile-header">Market rate</th><td>€147.00</td>
                             </tr>
                             <tr>
                                 <td>House of Dedgeny High</td>
-                                <th class="mobile-header">Number</th><td>5899</td>
-                                <th class="mobile-header">Market rate</th><td>€ 288.00</td>
+                                <th className="mobile-header">Number</th><td>5899</td>
+                                <th className="mobile-header">Market rate</th><td>€ 288.00</td>
                             </tr>
                             <tr>
                                 <td>House of Dedgeny USD Med</td>
-                                <th class="mobile-header">Number</th><td>11477</td>
-                                <th class="mobile-header">Market rate</th><td>€18.00</td>
+                                <th className="mobile-header">Number</th><td>11477</td>
+                                <th className="mobile-header">Market rate</th><td>€18.00</td>
                             </tr>
                             <tr>
                                 <td>Sterck Inc. Med</td>
-                                <th class="mobile-header">Number</th><td>1476</td>
-                                <th class="mobile-header">Market rate</th><td>€187.00</td>
+                                <th className="mobile-header">Number</th><td>1476</td>
+                                <th className="mobile-header">Market rate</th><td>€187.00</td>
                             </tr>
                             <tr>
                                 <td>PlayCo Group Universal High</td>
-                                <th class="mobile-header">Number</th><td>6547</td>
-                                <th class="mobile-header">Market rate</th><td>€782.00</td>
+                                <th className="mobile-header">Number</th><td>6547</td>
+                                <th className="mobile-header">Market rate</th><td>€782.00</td>
                             </tr>
                             <tr>
                                 <td>PlayCo Group Universal Low</td>
-                                <th class="mobile-header">Number</th><td>1476</td>
-                                <th class="mobile-header">Market rate</th><td>€187.00</td>
+                                <th className="mobile-header">Number</th><td>1476</td>
+                                <th className="mobile-header">Market rate</th><td>€187.00</td>
                             </tr>
                             <tr>
                                 <td>PlayCo Group Universal High</td>
-                                <th class="mobile-header">Number</th><td>1471</td>
-                                <th class="mobile-header">Market rate</th><td>€148.00</td>
+                                <th className="mobile-header">Number</th><td>1471</td>
+                                <th className="mobile-header">Market rate</th><td>€148.00</td>
                             </tr>
                             <tr>
                                 <td>Sterck Inc. Low</td>
-                                <th class="mobile-header">Number</th><td>1978</td>
-                                <th class="mobile-header">Market rate</th><td>€68.23</td>
+                                <th className="mobile-header">Number</th><td>1978</td>
+                                <th className="mobile-header">Market rate</th><td>€68.23</td>
                             </tr>
 
                         </tbody>
