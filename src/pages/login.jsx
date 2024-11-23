@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import "../styles/login.css";
+import "../styles/scss/login.scss";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom'
@@ -10,7 +10,6 @@ import fireConfig from '../firebaseconf';
 import { getDatabase, onValue, ref } from 'firebase/database';
 import auth from "../firebaseconf"
 import { signInWithEmailAndPassword } from 'firebase/auth';
-
 
 export default function Login() {
     const navigate = useNavigate();
@@ -77,6 +76,7 @@ export default function Login() {
         setradio(buttonValue);
         console.log(buttonValue);
     }
+
     useEffect(() => {
         localStorage.setItem("formValues", JSON.stringify(formValues));
     }, [formValues]);
@@ -94,27 +94,25 @@ export default function Login() {
                 seterror("Logged in successfully redirecting to home page...");
                 errormessage.style.color = greencol;
                 navigate('/home')
-            }
-            else {
+            } else {
                 seterror("Incorrect Password");
                 errormessage.style.color = "red";
             }
-        }
-        else {
+        } else {
             seterror("username in not correct");
         }
+
         setFormValues(formObject);
         e.preventDefault();
 
         console.log(formValues);
     }
 
-
-
     function Handleinput(e) {
         const val = e.target.value;
         setinpVal(val);
     }
+
     function HandlePass(e) {
         const val = e.target.value;
         setpassVal(val);
@@ -184,10 +182,10 @@ export default function Login() {
                                             </IconButton>
                                         </InputAdornment>
                                     }
+
                                     label="Password"
                                 />
                             </FormControl>
-
 
                             <button className='mt-3 sub' type="submit">Log In</button>
                         </form>

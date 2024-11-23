@@ -2,7 +2,7 @@
 // import React, { useState } from 'react';
 // import { auth } from '../firebaseconf'; // Adjust the import path as needed
 // import { signInWithEmailAndPassword } from "firebase/auth";
-// import '../styles/login.css'; // Import your CSS if you have
+// import '../styles/login.scss'; // Import your CSS if you have
 // import { useNavigate } from 'react-router-dom';
 
 // const FireLogin = () => {

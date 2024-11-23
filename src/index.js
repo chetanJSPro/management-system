@@ -1,5 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.css';
-import './index.css';
+
 import 'bootstrap/dist/js/bootstrap.js';
 import App from './App';
 import React from 'react';

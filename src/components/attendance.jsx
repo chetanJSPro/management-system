@@ -1,4 +1,4 @@
-import '../styles/dashboard.css'
+import '../styles/scss/component.scss'
 
 import {
     Box,

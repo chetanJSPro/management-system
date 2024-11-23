@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import "../styles/dashboard.css";
+import "../styles/scss/component.scss";
 import Layout from '../components/layout';
 function AddAttendence() {
     const [students, setStudents] = useState([
@@ -57,6 +57,7 @@ function AddAttendence() {
         console.log(students);
         e.preventDefault();
     }
+
     const today = Date.now();
 
     const fulldate = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(today);
@@ -64,6 +65,7 @@ function AddAttendence() {
     return (
         <Layout>
             <form onSubmit={submitForm} id='myForm' action="" className='col-8 p-5'>
+                <h1>Update Attendence</h1>
                 <p>Today: {fulldate}</p>
                 <p>Teacher:</p>
                 <table className='table table-hover table-responsive'>
@@ -110,7 +112,6 @@ function AddAttendence() {
             </form>
         </Layout >
     )
-
 }
 
 export default AddAttendence

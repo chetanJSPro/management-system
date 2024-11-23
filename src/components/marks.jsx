@@ -155,13 +155,13 @@ export default function Marks() {
     }
 
     setSubjects(arr);
-
   }
+
   return (
     <Layout>
       <div className='col-6 col-sm-8 mt-5 ms-5'>
         <div className='row'>
-          <h1 className='col-12 mb-5'>Check Your Attendence</h1>
+          <h1 className='col-12 mb-5'>Check Marks</h1>
           <div className="form-floating col-sm-6">
             <select className="form-select" aria-label="Default select example" onChange={handleChange} >
               <option selected>-----</option>

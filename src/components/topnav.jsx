@@ -1,9 +1,12 @@
 import React from 'react'
-
+import logo from "../assets/images/logo.png"
 export default function Topnav() {
     return (
-        <nav className="navbar shadow-lg navbar-expand-lg bg-body-tertiary">
+        <nav className="navbar shadow-lg navbar-expand-lg ">
             <div className="container-fluid">
+                <a className="navbar-brand" href="#">
+                    <img src={logo} height={60} alt="" />
+                </a>
                 <button
                     className="navbar-toggler"
                     type="button"
@@ -15,29 +18,22 @@ export default function Topnav() {
                 >
                     <span className="navbar-toggler-icon" />
                 </button>
-                <a className="navbar-brand col-md-8" href="#">
-                    Lalbahadur shastri institute of sanskrit
-                </a>
                 <div className="collapse navbar-collapse " id="navbarTogglerDemo03">
-                    <ul className="navbar-nav mb-2 ">
-                        <li className="nav-item col-3 pe-3">
+                    <ul className="navbar-nav mb-2 d-flex navbar-right">
+                        <li className="nav-item ">
                             <a className="nav-link active" aria-current="page" href="#">
                                 Home
                             </a>
                         </li>
-                        <li className="nav-item col-5 pe-3">
-                            <a className="nav-link active" href="#">
-                                Add attendance
-                            </a>
-                        </li>
-                        <li className="nav-item dropdown col-3">
+
+                        <li className="nav-item dropdown ">
                             <a className="nav-link active dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Other options
+                                Profile
                             </a>
                             <ul className="dropdown-menu">
-                                <li><a className="dropdown-item" href="#">Add students</a></li>
-                                <li><a className="dropdown-item" href="/check-attendence">check attendence</a></li>
-                                <li><a className="dropdown-item" href="#">marks</a></li>
+                                <li><a className="dropdown-item" href="#">Welcome user</a></li>
+                                <li><a className="dropdown-item" href="/check-attendence">Settings</a></li>
+                                <li><a className="dropdown-item" href="#">Log out</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -45,6 +41,5 @@ export default function Topnav() {
                 </div>
             </div>
         </nav>
-
     )
 }

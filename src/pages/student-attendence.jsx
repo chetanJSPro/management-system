@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Layout from '../components/layout'
-import "../styles/checkatt.css"
+
 export default function Studentcheckatt() {
     const attendance = [
         { date: "2024-03-06", status: "A" },
@@ -43,7 +43,6 @@ export default function Studentcheckatt() {
     ];
     const [color, setcolor] = useState();
     function setcol() {
-
         attendance.map((entr) => {
             if (entr.status == "A") {
                 setcolor("text-danger");
@@ -52,6 +51,7 @@ export default function Studentcheckatt() {
             }
         })
     }
+
     return (
         <Layout>
             <div className='col-6 col-sm-8 mt-5 ms-5'>
@@ -88,7 +88,6 @@ export default function Studentcheckatt() {
                         <tbody>
                             {attendance.map((entries) => {
                                 return <tr><td>{entries.date}</td><td className={color}>{entries.status}</td></tr>
-
                             })}
                         </tbody>
                     </table>

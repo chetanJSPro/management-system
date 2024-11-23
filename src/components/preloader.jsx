@@ -1,10 +1,9 @@
 // src/components/Preloader.js
 import React from 'react';
-import '../styles/preloader.css'; // Create a CSS file for styles
 
 const Preloader = () => (
     <div className="preloader">
-        <div className="spinner"></div>
+        <iframe src="https://lottie.host/embed/b2868a70-67ae-4c32-8b85-ecaebbe73e8a/pCMDGzu7NJ.lottie"></iframe>
     </div>
 );
 

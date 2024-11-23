@@ -1,5 +1,5 @@
 import React from 'react'
-import "../styles/dashboard.css";
+import "../styles/scss/component.scss";
 import Layout from '../components/layout';
 function Readattendence() {
 
