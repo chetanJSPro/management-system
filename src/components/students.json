@@ -1,0 +1,156 @@
+[
+    {
+        "name": "Anjali",
+        "rollNo": "232590800118",
+        "dob": "1991-03-15",
+        "branch": "ECE",
+        "fatherName": "Rajesh",
+        "motherName": "Lakshmi",
+        "address": "Green Park, New Delhi, Delhi, 110016",
+        "email": "anjali@example.com",
+        "phoneNo": "9876543210"
+    },
+    {
+        "name": "Amit",
+        "rollNo": "232590800119",
+        "dob": "1992-04-12",
+        "branch": "ME",
+        "fatherName": "Mahesh",
+        "motherName": "Kiran",
+        "address": "Silver Oak Apartments, Mumbai, Maharashtra, 400001",
+        "email": "amit@example.com",
+        "phoneNo": "8765432109"
+    },
+    {
+        "name": "Priya",
+        "rollNo": "232590800120",
+        "dob": "1993-05-10",
+        "branch": "CSE",
+        "fatherName": "Suresh",
+        "motherName": "Geeta",
+        "address": "Palm Grove, Chennai, Tamil Nadu, 600032",
+        "email": "priya@example.com",
+        "phoneNo": "7654321098"
+    },
+    {
+        "name": "Rohan",
+        "rollNo": "232590800121",
+        "dob": "1994-06-20",
+        "branch": "EEE",
+        "fatherName": "Kumar",
+        "motherName": "Meena",
+        "address": "Raj Heights, Bengaluru, Karnataka, 560001",
+        "email": "rohan@example.com",
+        "phoneNo": "6543210987"
+    },
+    {
+        "name": "Sakshi",
+        "rollNo": "232590800122",
+        "dob": "1995-07-22",
+        "branch": "IT",
+        "fatherName": "Dinesh",
+        "motherName": "Vimala",
+        "address": "Garden Residency, Jaipur, Rajasthan, 302001",
+        "email": "sakshi@example.com",
+        "phoneNo": "5432109876"
+    },
+    {
+        "name": "Vikas",
+        "rollNo": "232590800123",
+        "dob": "1996-08-30",
+        "branch": "Civil",
+        "fatherName": "Rajiv",
+        "motherName": "Sunita",
+        "address": "Emerald Greens, Pune, Maharashtra, 411001",
+        "email": "vikas@example.com",
+        "phoneNo": "4321098765"
+    },
+    {
+        "name": "Neha",
+        "rollNo": "232590800124",
+        "dob": "1997-09-15",
+        "branch": "Biotech",
+        "fatherName": "Ashok",
+        "motherName": "Meera",
+        "address": "Blue Sky Apartments, Lucknow, Uttar Pradesh, 226001",
+        "email": "neha@example.com",
+        "phoneNo": "3210987654"
+    },
+    {
+        "name": "Arjun",
+        "rollNo": "232590800125",
+        "dob": "1998-10-18",
+        "branch": "Mechanical",
+        "fatherName": "Bharat",
+        "motherName": "Kavita",
+        "address": "Sunrise Villa, Kochi, Kerala, 682001",
+        "email": "arjun@example.com",
+        "phoneNo": "2109876543"
+    },
+    {
+        "name": "Kriti",
+        "rollNo": "232590800126",
+        "dob": "1999-11-05",
+        "branch": "EEE",
+        "fatherName": "Shiv",
+        "motherName": "Anjali",
+        "address": "Orchid Plaza, Ahmedabad, Gujarat, 380001",
+        "email": "kriti@example.com",
+        "phoneNo": "1098765432"
+    },
+    {
+        "name": "Gaurav",
+        "rollNo": "232590800127",
+        "dob": "2000-12-12",
+        "branch": "CSE",
+        "fatherName": "Om",
+        "motherName": "Deepa",
+        "address": "Lotus Towers, Chandigarh, Punjab, 160001",
+        "email": "gaurav@example.com",
+        "phoneNo": "9087654321"
+    },
+    {
+        "name": "Sanya",
+        "rollNo": "232590800128",
+        "dob": "2001-01-21",
+        "branch": "ECE",
+        "fatherName": "Vijay",
+        "motherName": "Nisha",
+        "address": "Golden Gate, Hyderabad, Telangana, 500001",
+        "email": "sanya@example.com",
+        "phoneNo": "8076543219"
+    },
+    {
+        "name": "Dev",
+        "rollNo": "232590800129",
+        "dob": "2002-02-14",
+        "branch": "Civil",
+        "fatherName": "Arvind",
+        "motherName": "Rani",
+        "address": "River View, Bhopal, Madhya Pradesh, 462001",
+        "email": "dev@example.com",
+        "phoneNo": "7065432198"
+    },
+    {
+        "name": "Pooja",
+        "rollNo": "232590800130",
+        "dob": "2003-03-08",
+        "branch": "Biotech",
+        "fatherName": "Manoj",
+        "motherName": "Seema",
+        "address": "Sunny Meadows, Patna, Bihar, 800001",
+        "email": "pooja@example.com",
+        "phoneNo": "6054321987"
+    },
+    {
+        "name": "Aditya",
+        "rollNo": "232590800131",
+        "dob": "2004-04-25",
+        "branch": "IT",
+        "fatherName": "Vikas",
+        "motherName": "Swati",
+        "address": "Skyline Apartments, Kolkata, West Bengal, 700001",
+        "email": "aditya@example.com",
+        "phoneNo": "5043219876"
+    }
+]

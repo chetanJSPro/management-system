@@ -6,11 +6,14 @@ import { useNavigate } from 'react-router-dom'
 import { FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-
+import fireConfig from '../firebaseconf';
+import { getDatabase, onValue, ref } from 'firebase/database';
+import auth from "../firebaseconf"
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 
 export default function Login() {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const [error, seterror] = useState();
     const [passVal, setpassVal] = useState();
     const [inpVal, setinpVal] = useState();
@@ -66,7 +69,6 @@ export default function Login() {
         }
     ];
 
-
     let greencol = "#65de44";
     let errormessage = document.getElementById("error");
 
@@ -85,7 +87,7 @@ export default function Login() {
         console.log(formObject);
         let inpvalue = String(inpVal);
         let passvalue = String(passVal);
-        let usercheck = radio === "student" ? students.find((user) => user.username === inpvalue) : teachers.find((user) => user.username === inpvalue);
+        let usercheck = radio === "student" ? students.find((user) => user.username === inpvalue) : teachers.find((user) => user.rollNo === passvalue);
 
         if (usercheck) {
             if (usercheck.password === passvalue) {
@@ -106,6 +108,8 @@ export default function Login() {
 
         console.log(formValues);
     }
+
+
 
     function Handleinput(e) {
         const val = e.target.value;
@@ -148,7 +152,7 @@ export default function Login() {
                             </div>
                             <TextField
                                 fullWidth
-                                id="username"
+                                id="username "
                                 name="username"
                                 label="UserName"
                                 className="form-control mb-2"
@@ -185,7 +189,7 @@ export default function Login() {
                             </FormControl>
 
 
-                            <button className='sub' type="submit">Log In</button>
+                            <button className='mt-3 sub' type="submit">Log In</button>
                         </form>
                         <div id='error'>{error}</div>
                         <div id="formFooter">

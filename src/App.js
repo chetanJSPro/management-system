@@ -16,6 +16,9 @@ import Login from './pages/login';
 import Topnav from './components/topnav';
 import Studentcheckatt from './pages/studentcheckatt';
 import Welcome from './pages/welcome';
+import Profile from './pages/profile';
+import FireLogin from './pages/firelogin';
+import Signup from './pages/signup';
 
 function App() {
 
@@ -27,9 +30,13 @@ function App() {
         <Routes>
           <Route path="/student-details" element={<StudentDetails />} />
           <Route path="/check-attendence" element={<Studentcheckatt />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/nav" element={<Topnav />} />
           <Route path="/welcome" element={<Welcome />} />
-          <Route path="/" element={<Login />} />
+          <Route path="/hh" element={<Login />} />
+          <Route path="/login" element={<FireLogin />} />
+          <Route path="/signup" element={<Signup />} />
+
           <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/studentfees" element={<StudentFees />}>
           </Route>
