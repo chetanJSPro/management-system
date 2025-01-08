@@ -1,0 +1,28 @@
+body {
+    background: #f5f5f5;
+}
+
+.quickaction {
+    border-radius: 20px;
+    // width: 70%;
+    background: #ffffff;
+    padding: 30px 30px 30px 30px;
+    height: 100%;
+    // margin-left: 90px;
+}
+
+.side-panel {
+    margin: 20px 0px 20px 51px;
+    border-radius: 20px;
+    padding: 30px;
+
+    .notice {
+        height: 400px;
+
+        li {
+            padding: 20px;
+        }
+    }
+}
+
+// assignment css 

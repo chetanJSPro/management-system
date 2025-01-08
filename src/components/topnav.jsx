@@ -2,7 +2,7 @@ import React from 'react'
 import logo from "../assets/images/logo.png"
 export default function Topnav() {
     return (
-        <nav className="navbar shadow-lg navbar-expand-lg ">
+        <nav className="navbar bg-white shadow-lg navbar-expand-lg ">
             <div className="container-fluid">
                 <a className="navbar-brand" href="#">
                     <img src={logo} height={60} alt="" />

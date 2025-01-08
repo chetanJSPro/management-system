@@ -1,53 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import "../styles/scss/component.scss";
 import Layout from '../components/layout';
+import { getDatabase, onValue, ref } from 'firebase/database';
+import fireConfig, { database } from '../firebaseconf';
 function AddAttendence() {
-    const [students, setStudents] = useState([
+    const today = Date.now();
+    const fulldate = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(today);
 
-        {
-            "id": 1,
-            "name": "chetan sharma",
-            "rollno": 22,
-            "class": "cse jufu",
-            "present": ""
-        },
-        {
-            "id": 2,
-            "name": "Rajkumar",
-            "rollno": 12,
-            "class": "cse fu",
-            "present": ""
-        },
-        {
-            "id": 3,
-            "name": "dayanand",
-            "rollno": 28,
-            "class": "ce jufu",
-            "present": ""
-        },
-        {
-            "id": 4,
-            "name": "aakash",
-            "rollno": 92,
-            "class": "ee jufu",
-            "present": ""
-        },
+    const [students, setStudents] = useState([]);
 
-        {
-            "id": 5,
-            "name": "Ram Lal",
-            "rollno": 22,
-            "class": "cse jufu",
-            "present": ""
-        },
-        {
-            "id": 6,
-            "name": "prakashlal",
-            "rollno": 255,
-            "class": "me jufu",
-            "present": ""
-        }
-    ]);
+    const [data, setData] = useState(null);
+    const [marks, setMarks] = useState({}); // Store marks for each student
+
+    useEffect(() => {
+        const dataRef = ref(database, 'students');
+        const unsubscribe = onValue(dataRef, (snapshot) => {
+            const fetchedData = snapshot.val();
+            setData(fetchedData);
+
+            // Initialize marks state for each student
+            const initialMarks = {};
+            if (fetchedData) {
+                Object.keys(fetchedData).forEach((key) => {
+                    initialMarks[key] = fetchedData[key];
+                });
+            }
+
+            setMarks(initialMarks);
+        });
+
+        return () => unsubscribe();
+    }, []);
+    console.log(marks);
+
     function submitForm(e) {
         const update = students.map((student) => {
             student.present = document.querySelector(`input[value="${student.name}"]:checked`) ? "yes" : "no";
@@ -58,13 +43,9 @@ function AddAttendence() {
         e.preventDefault();
     }
 
-    const today = Date.now();
-
-    const fulldate = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(today);
-
     return (
         <Layout>
-            <form onSubmit={submitForm} id='myForm' action="" className='col-8 p-5'>
+            {students ? (<form onSubmit={submitForm} id='myForm' action="" className='col-8 p-5'>
                 <h1>Update Attendence</h1>
                 <p>Today: {fulldate}</p>
                 <p>Teacher:</p>
@@ -110,6 +91,14 @@ function AddAttendence() {
                 </table>
                 <button onClick={submitForm} type="submit" className='btn btn-lg btn-success text-uppercase'>submit</button>
             </form>
+            ) : (
+                <tr>
+                    <td colSpan="7" className="text-center">
+                        Loading data...
+                    </td>
+                </tr>
+            )
+            }
         </Layout >
     )
 }

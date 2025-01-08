@@ -29,7 +29,6 @@ export default function UpdateMarks() {
             setMarks(initialMarks);
         });
 
-        // Cleanup the subscription on unmount
         return () => unsubscribe();
     }, []);
 

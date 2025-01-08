@@ -1,4 +1,9 @@
-@import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 @import './scss/nav.scss';
 @import './scss/global.scss';
 @import './scss/component.scss';
+@import './scss/teacherdashboard.scss';
+
+.row {
+    padding: 0 !important;
+    --bs-gutter-x: 0 !important;
+}
