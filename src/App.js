@@ -5,8 +5,7 @@ import Dashboard from './pages/dashboard';
 import StudentDetails from './pages/student-details';
 
 import StudentForm from './pages/studentform';
-import StudentMarks from './pages/marks';
-import Markstest from './pages/markstest';
+
 import Readattendence from './pages/readattendence';
 import AddAttendence from './pages/student-update-attendence.jsx';
 import CalendarPage from './components/calendar';
@@ -20,8 +19,9 @@ import Signup from './pages/signup';
 import Updatemarks from './pages/student-marks';
 import Teacherdashboard from './pages/teacher-dashboard.jsx';
 import Assignment from './pages/assignment.jsx';
-import StudentCheckMarks from './pages/check-marks.js';
-
+import StudentCheckMarks from './pages/check-marks.jsx';
+import Sessionals from './pages/sessionals.jsx';
+import Test from './pages/tet.jsx';
 function App() {
   return (
 
@@ -42,7 +42,8 @@ function App() {
           <Route path="/signup" element={<Signup />} />
 
           <Route path="/calendar" element={<CalendarPage />} />
-          <Route path="/marktest" element={<Markstest />} />
+          <Route path="/sessional" element={<Sessionals />} />
+          <Route path="/test" element={<Test />} />
 
           <Route path="/checkmarks" element={<StudentCheckMarks />} />
 
@@ -52,7 +53,7 @@ function App() {
           </Route>
           <Route path="/home" element={<Dashboard />}>
           </Route>
-          <Route path="/marks" element={<StudentMarks />} />
+
           <Route path="/studentform" element={<StudentForm />}>
           </Route>
         </Routes>

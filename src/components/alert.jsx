@@ -6,12 +6,14 @@ import Collapse from '@mui/material/Collapse';
 import Button from '@mui/material/Button';
 import CloseIcon from '@mui/icons-material/Close';
 import { AlertTitle, LinearProgress } from '@mui/material';
+import { useState } from 'react';
+import { useEffect } from 'react';
 
 export default function TransitionAlerts() {
-    const [open, setOpen] = React.useState(true);
-    const [progress, setProgress] = React.useState(100); // Start at 100% for the progress bar
+    const [open, setOpen] = useState(true);
+    const [progress, setProgress] = useState(100); // Start at 100% for the progress bar
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (open) {
             // Countdown to automatically close alert after 5 seconds
             const timer = setTimeout(() => {
@@ -44,6 +46,7 @@ export default function TransitionAlerts() {
                             <CloseIcon fontSize="inherit" />
                         </IconButton>
                     }
+
                     sx={{ mb: 2 }}
                 >
                     <AlertTitle>Success</AlertTitle>

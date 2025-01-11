@@ -6,9 +6,7 @@ import { Filter } from '@mui/icons-material';
 
 export default function StudentCheckMarks() {
     const [data, setData] = useState([]);
-    const [email, setEmail] = useState('');
     const [rollNo, setRollNo] = useState('');
-    const [user, setUser] = useState(null);
     const [filteredData, setFilteredData] = useState([]);
     useEffect(() => {
         const dataRef = ref(database, 'students');
@@ -23,10 +21,6 @@ export default function StudentCheckMarks() {
     // console.log(data);
     function handleChange(e) {
         setRollNo(e.target.value);
-    }
-
-    function handleChangeEmail(e) {
-        setEmail(e.target.value);
     }
 
     function handleSubmit() {

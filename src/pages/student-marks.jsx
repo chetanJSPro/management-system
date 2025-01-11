@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react';
 import Layout from '../components/layout';
 import { onValue, ref, update } from 'firebase/database';
 import { database } from '../firebaseconf';
+import Preloader from '../components/preloader';
+import Alert from '../components/alert';
 
 export default function UpdateMarks() {
     const [data, setData] = useState(null);
     const [marks, setMarks] = useState({}); // Store marks for each student
-
+    const [alertVisible, setAlertVisible] = useState(false);
+    const [loading, setLoading] = useState(false);
     useEffect(() => {
         const dataRef = ref(database, 'students');
         const unsubscribe = onValue(dataRef, (snapshot) => {
@@ -17,12 +20,14 @@ export default function UpdateMarks() {
             const initialMarks = {};
             if (fetchedData) {
                 Object.keys(fetchedData).forEach((key) => {
-                    initialMarks[key] = fetchedData[key].marks || {
-                        English: 0,
-                        Maths: 0,
-                        Physics: 0,
-                        IT: 0,
-                    };
+                    const studentMarks = fetchedData[key].marks || {};
+                    initialMarks[key] = studentMarks;
+                    // initialMarks[key] = fetchedData[key].marks || {
+                    // English: 0,
+                    // Maths: 0,
+                    // Physics: 0,
+                    // IT: 0,
+                    // };
                 });
             }
 
@@ -31,6 +36,7 @@ export default function UpdateMarks() {
 
         return () => unsubscribe();
     }, []);
+    // console.log(data);
 
     const handleMarksChange = (studentId, subject, value) => {
         setMarks((prev) => ({
@@ -44,13 +50,15 @@ export default function UpdateMarks() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        setLoading(true);
         try {
             // Update each student's marks in Firebase
             const updatePromises = Object.keys(marks).map((studentId) => {
                 const studentRef = ref(database, `students/${studentId}/marks`);
                 return update(studentRef, marks[studentId]);
             });
+            setAlertVisible(true);
+            setTimeout(() => setAlertVisible(false), 3000);
 
             await Promise.all(updatePromises); // Wait for all updates to complete
 
@@ -62,6 +70,8 @@ export default function UpdateMarks() {
             });
         } catch (error) {
             console.error('Error updating marks:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -69,6 +79,8 @@ export default function UpdateMarks() {
         <Layout>
             <section className='col-8 pt-5'>
                 <h1 className='text-center mb-4'>Update Student Marks</h1>
+                {alertVisible && <Alert message="Form submitted successfully!" />}
+                {loading && <Preloader />}
                 <form onSubmit={handleSubmit}>
                     <div className='row justify-content-center table-responsive ms-3'>
                         <table className='table table-hover'>
@@ -102,6 +114,7 @@ export default function UpdateMarks() {
                                                     placeholder="Enter marks"
                                                 />
                                             </td>
+
                                             <td>
                                                 <input
                                                     type="number"
