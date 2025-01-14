@@ -33,7 +33,7 @@ export default function StudentCheckMarks() {
 
     return (
         <Layout>
-            <section className='col-8 pt-5 mx-auto'>
+            <section className='col-12 pt-5 mx-auto'>
                 <h1 className='text-center mb-4'>Check Marks</h1>
 
                 <div class="form-floating mb-3 col-7">

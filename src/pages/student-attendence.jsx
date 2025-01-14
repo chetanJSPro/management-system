@@ -54,7 +54,7 @@ export default function Studentcheckatt() {
 
     return (
         <Layout>
-            <div className='col-6 col-sm-8 mt-5 ms-5'>
+            <div className='col-12 mt-5 ms-5'>
                 <div className='row'>
                     <h1 className='col-12 mb-5'>Check Your Attendence</h1>
                     <div className="form-floating mb-3 col-sm-3">
@@ -78,7 +78,7 @@ export default function Studentcheckatt() {
                         <label className='ms-3' for="floatingPassword">Select</label>
                     </div>
                     <h3 className='mt-5 mb-5'>Attendence</h3>
-                    <table className="table table-hover">
+                    <table className="table table-hover col-4">
                         <thead>
                             <tr>
                                 <th scope="col">date</th>

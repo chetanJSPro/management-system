@@ -26,11 +26,6 @@ function Nav() {
                     </ul>
                 </li>
 
-                <li className="sidebar-components">
-                    <a href="/check-attendence" className="link-light link-underline-opacity-0 link-underline-opacity-100-hover">
-                        Check Attendance
-                    </a>
-                </li>
 
                 <li className="sidebar-components dropdown">
                     <a
@@ -58,6 +53,11 @@ function Nav() {
                         <li><a className="dropdown-item" href="/addAttendence">Add / Update</a></li>
                         <li><button className="dropdown-item" type="button">Bulk Update</button></li>
                     </ul>
+                </li>
+                <li className="sidebar-components">
+                    <a href="/check-attendence" className="link-light link-underline-opacity-0 link-underline-opacity-100-hover">
+                        Check Attendance
+                    </a>
                 </li>
 
             </ul>

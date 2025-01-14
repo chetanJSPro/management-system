@@ -4,6 +4,7 @@ import fireConfig from "../firebaseconf";
 import { getDatabase, ref, onValue, push } from "firebase/database";
 import Preloader from '../components/preloader';
 import Alert from '../components/alert';
+import Header from '../components/header';
 
 export default function StudentForm() {
     const [data, setData] = useState([]);
@@ -68,9 +69,9 @@ export default function StudentForm() {
 
     return (
         <Layout>
-            <section className='col-8 pt-5'>
+            <Header title="Add Student" />
+            <section className='col-12 pt-5'>
                 {alertVisible && <Alert message="Form submitted successfully!" />}
-                <h1 className='text-center mb-4'>Add Student</h1>
                 {loading && <Preloader />}
                 <form onSubmit={handleAddStudent}>
                     <div className='row justify-content-center'>

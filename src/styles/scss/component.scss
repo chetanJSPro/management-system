@@ -1,8 +1,3 @@
-.dashboard-container {
-    display: flex;
-    width: 75%;
-}
-
 .sidebar {
     height: 120vh;
     background-color: #343a40;
@@ -11,6 +6,10 @@
     flex-direction: column;
     box-sizing: border-box;
     padding: 0px;
+}
+
+.main-cards {
+    cursor: progress;
 }
 
 .main-content {
@@ -44,7 +43,7 @@
 .content {
     padding: 20px;
     flex: 1;
-    background-color: #e9ecef;
+    background-color: #ffffff;
 }
 
 .cards {
@@ -118,4 +117,13 @@ tr {
             }
         }
     }
+}
+
+.head {
+    background: url('../../assets/images/header.png') no-repeat center center;
+    background-size: cover;
+    height: 120px;
+    position: relative;
+    margin: 0 0 20px 0 !important;
+    // left: -25px;
 }

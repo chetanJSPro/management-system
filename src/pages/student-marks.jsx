@@ -4,72 +4,122 @@ import { onValue, ref, update } from 'firebase/database';
 import { database } from '../firebaseconf';
 import Preloader from '../components/preloader';
 import Alert from '../components/alert';
+import Header from '../components/header';
 
-export default function UpdateMarks() {
+export default function Sessionals() {
     const [data, setData] = useState(null);
-    const [marks, setMarks] = useState({}); // Store marks for each student
+    const [sessionals, setsessionals] = useState({});
     const [alertVisible, setAlertVisible] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [semesters, setSemesters] = useState([]);
+    const [selectedSemester, setSelectedSemester] = useState('');
+    const [sessionalsubjects, setSessionalSubjects] = useState([]);
+
     useEffect(() => {
-        const dataRef = ref(database, 'students');
-        const unsubscribe = onValue(dataRef, (snapshot) => {
-            const fetchedData = snapshot.val();
-            setData(fetchedData);
-
-            // Initialize marks state for each student
-            const initialMarks = {};
-            if (fetchedData) {
-                Object.keys(fetchedData).forEach((key) => {
-                    const studentMarks = fetchedData[key].marks || {};
-                    initialMarks[key] = studentMarks;
-                    // initialMarks[key] = fetchedData[key].marks || {
-                    // English: 0,
-                    // Maths: 0,
-                    // Physics: 0,
-                    // IT: 0,
-                    // };
-                });
+        const subjectsRef = ref(database, 'sessionals');
+        onValue(subjectsRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                const semesterKeys = Object.keys(data);
+                setSemesters(semesterKeys);
             }
-
-            setMarks(initialMarks);
         });
-
-        return () => unsubscribe();
     }, []);
-    // console.log(data);
 
-    const handleMarksChange = (studentId, subject, value) => {
-        setMarks((prev) => ({
+    useEffect(() => {
+        if (selectedSemester) {
+            const subjectRef = ref(database, `subjects/${selectedSemester}`);
+            onValue(subjectRef, (snapshot) => {
+                const data = snapshot.val();
+                setSessionalSubjects(data);
+            });
+        }
+    },
+        [selectedSemester]);
+    console.log(sessionalsubjects); // to run on change in semester feild
+
+    // const handlesessionalsChange = (subject, rollNo, value) => {
+    //     setsessionals((prev) => ({
+    //         ...prev,
+    //         [rollNo]: {
+    //             ...(prev[rollNo]),
+    //             [subject]: value,
+    //         },
+    //     }));
+    // };
+
+    const checksubject = (key) => {
+        return key.replace(/[./#$\[\]]/g, '_');
+    };
+
+    const handlesessionalsChange = (subject, rollNo, value) => {
+        const sanitizedSubject = checksubject(subject);
+        setsessionals((prev) => ({
             ...prev,
-            [studentId]: {
-                ...prev[studentId],
-                [subject]: value,
+            [rollNo]: {
+                ...(prev[rollNo]),
+                [sanitizedSubject]: value,
             },
         }));
     };
+
+    useEffect(() => {
+        const studentRef = ref(database, 'students');
+        onValue(studentRef, (snapshot) => {
+            const data = snapshot.val();
+            setData(data);
+        });
+    }, []);
+
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    //     setLoading(true);
+    //     try {
+    //         const sessionalsdata = {};
+    //         Object.values(data).forEach((student) => {
+    //             const rollNo = student.rollNo;
+    //             if (sessionals[rollNo]) {
+    //                 sessionalsdata[rollNo] = {
+    //                     ...sessionals[rollNo],
+    //                 };
+    //             }
+    //         });
+
+    //         const sessionalRef = ref(database, `finalMarks/${selectedSemester}`);
+    //         await update(sessionalRef, sessionalsdata);
+
+    //         setAlertVisible(true);
+    //         setTimeout(() => setAlertVisible(false), 3000);
+    //     } catch (error) {
+    //         console.error("Error updating sessionals:", error);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         try {
-            // Update each student's marks in Firebase
-            const updatePromises = Object.keys(marks).map((studentId) => {
-                const studentRef = ref(database, `students/${studentId}/marks`);
-                return update(studentRef, marks[studentId]);
+            const sessionalsdata = {};
+            Object.values(data).forEach((student) => {
+                const rollNo = student.rollNo;
+                if (sessionals[rollNo]) {
+                    const checkedData = {};
+                    Object.entries(sessionals[rollNo]).forEach(([key, value]) => {
+                        checkedData[checksubject(key)] = value;
+                    });
+                    sessionalsdata[rollNo] = checkedData;
+                }
             });
+
+            const sessionalRef = ref(database, `finalMarks/${selectedSemester}`);
+            await update(sessionalRef, sessionalsdata);
+
             setAlertVisible(true);
             setTimeout(() => setAlertVisible(false), 3000);
-
-            await Promise.all(updatePromises); // Wait for all updates to complete
-
-            // Fetch updated data after submitting
-            const dataRef = ref(database, 'students');
-            onValue(dataRef, (snapshot) => {
-                const updatedData = snapshot.val();
-                console.log('Updated Data:', updatedData);
-            });
         } catch (error) {
-            console.error('Error updating marks:', error);
+            console.error("Error updating sessionals:", error);
         } finally {
             setLoading(false);
         }
@@ -77,97 +127,82 @@ export default function UpdateMarks() {
 
     return (
         <Layout>
-            <section className='col-8 pt-5'>
-                <h1 className='text-center mb-4'>Update Student Marks</h1>
-                {alertVisible && <Alert message="Form submitted successfully!" />}
-                {loading && <Preloader />}
-                <form onSubmit={handleSubmit}>
-                    <div className='row justify-content-center table-responsive ms-3'>
-                        <table className='table table-hover'>
-                            <thead className='table-light'>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Name</th>
-                                    <th>Roll No</th>
-                                    <th>English</th>
-                                    <th>Maths</th>
-                                    <th>Physics</th>
-                                    <th>Fundamentals of IT</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {data ? (
-                                    Object.keys(data).map((key, index) => (
-                                        <tr key={key}>
-                                            <td>{index + 1}</td>
-                                            <td>{data[key].Name || 'N/A'}</td>
-                                            <td>{data[key].rollNo || 'N/A'}</td>
-                                            <td>
-                                                <input
-                                                    type="number"
-                                                    value={marks[key]?.English || ''}
-                                                    onChange={(e) =>
-                                                        handleMarksChange(key, 'English', e.target.value)
-                                                    }
+            <Header title="Update Final Marks" />
+            <section className="col-12 pt-5">
+                <div className="row justify-content-center">
 
-                                                    className="form-control"
-                                                    placeholder="Enter marks"
-                                                />
-                                            </td>
+                    {alertVisible && <Alert message="Form submitted successfully!" />}
+                    {loading && <Preloader />}
+                    <div className="form-group form-floating col-5 ms-3">
+                        <select aria-label="Floating label select example" required id="semester" className="form-select" value={selectedSemester} onChange={(e) =>
+                            setSelectedSemester(e.target.value)
+                        }>
+                            <option value="" selected>
+                                -----------
+                            </option>
+                            {semesters.map((semester) => (
+                                <option key={semester} value={semester}>
+                                    {semester}
+                                </option>
+                            ))}
+                        </select>
+                        <label htmlFor="floatingSelect">Select Semester:</label>
+                    </div>
 
-                                            <td>
-                                                <input
-                                                    type="number"
-                                                    value={marks[key]?.Maths || ''}
-                                                    onChange={(e) =>
-                                                        handleMarksChange(key, 'Maths', e.target.value)
-                                                    }
+                    <form onSubmit={handleSubmit} className="col-10 mt-4">
+                        <div className="row justify-content-center ms-3">
+                            {selectedSemester ? <table className="table table-hover table-responsive">
+                                <thead className="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Roll No</th>
+                                        {Object.values(sessionalsubjects).map((sub) => (
 
-                                                    className="form-control"
-                                                    placeholder="Enter marks"
-                                                />
-                                            </td>
-                                            <td>
-                                                <input
-                                                    type="number"
-                                                    value={marks[key]?.Physics || ''}
-                                                    onChange={(e) =>
-                                                        handleMarksChange(key, 'Physics', e.target.value)
-                                                    }
+                                            <th key={sub.id}>{sub.subject}</th>
+                                        )
+                                        )}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {data ? (
+                                        Object.keys(data).map((key, index) => (
+                                            <tr key={key.id}>
+                                                <td>{index + 1}</td>
+                                                <td>{data[key].Name}</td>
+                                                <td>{data[key].rollNo}</td>
+                                                {Object.values(sessionalsubjects).map((sub) => (
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            className="form-control"
+                                                            onChange={(e) =>
+                                                                handlesessionalsChange(sub.subject, data[key].rollNo, e.target.value)
+                                                            }
 
-                                                    className="form-control"
-                                                    placeholder="Enter marks"
-                                                />
-                                            </td>
-                                            <td>
-                                                <input
-                                                    type="number"
-                                                    value={marks[key]?.IT || ''}
-                                                    onChange={(e) =>
-                                                        handleMarksChange(key, 'IT', e.target.value)
-                                                    }
+                                                        />
+                                                    </td>
+                                                ))}
 
-                                                    className="form-control"
-                                                    placeholder="Enter marks"
-                                                />
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="7" className="text-center">
+                                                Loading data...
                                             </td>
                                         </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan="7" className="text-center">
-                                            Loading data...
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                    <button type="submit" className='btn btn-outline-danger offset-1'>
-                        Submit
-                    </button>
-                </form>
+                                    )}
+                                </tbody>
+                                <button type="submit" className="btn btn-outline-danger offset-1 ">
+                                    Submit
+                                </button>
+                            </table>
+                                : null}
+                        </div>
+                    </form>
+                </div>
             </section>
-        </Layout>
+        </Layout >
     );
 }

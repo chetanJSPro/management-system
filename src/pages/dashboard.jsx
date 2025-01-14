@@ -1,176 +1,116 @@
-import '../styles/scss/component.scss'
 
 import * as React from 'react';
 
-import { Box, Card, CardActions, CardContent, Grid, Link, Typography } from '@mui/material';
 import Layout from '../components/layout';
-import Button from '@mui/material/Button';
+import { useEffect, useState } from 'react';
+import { ref, onValue } from 'firebase/database';
+import { database } from '../firebaseconf';
+import Header from '../components/header';
+import { Grid, Card, CardActionArea, CardContent, Typography, Box } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 function Dashboard() {
-    const card1 = (
-        <React.Fragment className="cards">
-            <CardContent>
-                <Typography variant="h5" component="div">
-                    Yearly Attendence
-                </Typography>
-                <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                    all of the attendence of this year
-                </Typography>
-                <Typography sx={{ fontSize: 35 }}>
-                    200
-                </Typography>
-            </CardContent>
-            <CardActions>
-                <Button size="small" className="coloredButton" >Learn More</Button>
-            </CardActions>
-        </React.Fragment>
-    );
+    const [data, setData] = React.useState({});
+    const cards = [
+        {
+            id: 1,
+            title: 'Add Attendance',
+            description: 'Update Students Attendance.',
+            slug: '/addAttendence',
+        },
+        {
+            id: 2,
+            title: 'Sessional Marks',
+            description: 'Update Sessionals Marks.',
+            slug: '/sessional',
+        },
+        {
+            id: 3,
+            title: 'Add Students',
+            description: 'Add New Students details.',
+            slug: '/StudentForm',
+        },
+    ];
+    const [selectedCard, setSelectedCard] = React.useState(0);
 
-
-    const card2 = (
-        <React.Fragment>
-            <CardContent>
-                <Typography variant="h5" component="div">
-                    Monthly Attendence
-                </Typography>
-                <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                    all of the attendence of this month
-                </Typography>
-                <Typography sx={{ fontSize: 35 }}>
-                    18
-                </Typography>
-            </CardContent>
-            <CardActions>
-                <Button size="small" className="coloredButton" >Learn More</Button>
-            </CardActions>
-        </React.Fragment>
-    );
-
-    const card3 = (
-        <React.Fragment>
-            <CardContent>
-                <Typography variant="h5" component="div">
-                    Today Attendence
-                </Typography>
-                <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                    Attendence of today
-                </Typography>
-                <Typography sx={{ fontSize: 35 }}>
-                    attended
-                </Typography>
-            </CardContent>
-            <CardActions>
-                <Button className="coloredButton" >Learn More</Button>
-            </CardActions>
-        </React.Fragment>
-    );
-
+    React.useEffect(() => {
+        const studentRef = ref(database, 'students');
+        onValue(studentRef, (snapshot) => {
+            const data = snapshot.val();
+            setData(data);
+        });
+    }, []);
 
     return (
         <Layout>
-            <div className="dashboard-container">
-                <div className="main-content">
-                    <header className="topbar">
-                        <h1>Dashboard</h1>
-                        <div className="user-info">
-                            <p>Welcome, User</p>
-                            <a href="/">Logout</a>
-                        </div>
-                    </header>
-                    <div className="content">
-                        <Box sx={{ flexGrow: 1 }}>
-                            <Grid container spacing={2}>
+            <Header title="Dashboard" />
+            <Box className="dashboard-container" sx={{ p: 4 }}>
+                <Grid
+                    container
+                    spacing={5}
+                    justifyContent="center"
+                    // alignItems="center"
+                    className='quickaction shadow justify-content-center'
+                >
 
-                                <Grid item xs={4}>
-                                    <Box sx={{ minWidth: 275 }}>
-                                        <Card variant="outlined" className='cards'>{card1}</Card>
-                                    </Box>
-                                </Grid>
-                                <Grid item xs={4}>
-                                    <Box sx={{ minWidth: 275 }}>
-                                        <Card variant="outlined" className='cards'>{card2}</Card>
-                                    </Box>
-                                </Grid>  <Grid item xs={4}>
-                                    <Box sx={{ minWidth: 275 }}>
-                                        <Card variant="outlined" className='cards'>{card3}</Card>
-                                    </Box>
-                                </Grid>
-                            </Grid>
-                        </Box>
-                    </div>
-                    <table className='table'>
-                        <thead>
-                            <tr className="table-headers">
-                                <th>Name</th>
-                                <th>Number</th>
-                                <th>Market rate</th>
-                                <th>Weight</th>
-
-                                <th>Value</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                    {cards.map((card, index) => (
+                        <Grid className='pb-4' item key={index} xs={11} sm={6} md={4} lg={3}>
+                            <Card className='shadow rounded-4 mb-3' sx={{ height: '150px' }}>
+                                <Link to={card.slug} style={{ textDecoration: 'none' }}>
+                                    <CardActionArea
+                                        onClick={() => setSelectedCard(index)}
+                                        data-active={selectedCard === index ? '' : undefined}
+                                        sx={{
+                                            height: '100%',
+                                        }}
+                                    >
+                                        <CardContent>
+                                            <Typography variant="h5" component="div" align="center">
+                                                {card.title}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary" align="center">
+                                                {card.description}
+                                            </Typography>
+                                        </CardContent>
+                                    </CardActionArea>
+                                </Link>
+                            </Card>
+                        </Grid>
+                    ))}
+                </Grid>
+                <table className="table mt-5">
+                    <thead>
+                        <tr className="table-headers">
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Roll no.</th>
+                            <th>Branch</th>
+                            <th>Email</th>
+                            <th>Phone no.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {data ? (
+                            Object.keys(data).map((key, index) => (
+                                <tr key={key}>
+                                    <td>{index + 1}</td>
+                                    <td>{data[key].Name}</td>
+                                    <td>{data[key].rollNo}</td>
+                                    <td>{data[key].Branch}</td>
+                                    <td>{data[key].email}</td>
+                                    <td>{data[key].phoneNo}</td>
+                                </tr>
+                            ))
+                        ) : (
                             <tr>
-                                <td>PlayCo Group Universal Flex</td>
-                                <th className="mobile-header">Number</th><td>2489</td>
-                                <th className="mobile-header">Market rate</th><td>€12.35</td>
+                                <td colSpan="6" className="text-center">
+                                    Loading data...
+                                </td>
                             </tr>
-                            <tr>
-                                <td>House of Dedgeny EUR Flex</td>
-                                <th className="mobile-header">Number</th><td>5478</td>
-                                <th className="mobile-header">Market rate</th><td>€42.68	</td>
-                            </tr>
-                            <tr>
-                                <td>PlayCo Group Local</td>
-                                <th className="mobile-header">Number</th><td>123</td>
-                                <th className="mobile-header">Market rate</th><td>€147.36</td>
-                            </tr>
-                            <tr>
-                                <td>PlayCo Group Low</td>
-                                <th className="mobile-header">Number</th><td>5477</td>
-                                <th className="mobile-header">Market rate</th><td>€147.00</td>
-                            </tr>
-                            <tr>
-                                <td>House of Dedgeny High</td>
-                                <th className="mobile-header">Number</th><td>5899</td>
-                                <th className="mobile-header">Market rate</th><td>€ 288.00</td>
-                            </tr>
-                            <tr>
-                                <td>House of Dedgeny USD Med</td>
-                                <th className="mobile-header">Number</th><td>11477</td>
-                                <th className="mobile-header">Market rate</th><td>€18.00</td>
-                            </tr>
-                            <tr>
-                                <td>Sterck Inc. Med</td>
-                                <th className="mobile-header">Number</th><td>1476</td>
-                                <th className="mobile-header">Market rate</th><td>€187.00</td>
-                            </tr>
-                            <tr>
-                                <td>PlayCo Group Universal High</td>
-                                <th className="mobile-header">Number</th><td>6547</td>
-                                <th className="mobile-header">Market rate</th><td>€782.00</td>
-                            </tr>
-                            <tr>
-                                <td>PlayCo Group Universal Low</td>
-                                <th className="mobile-header">Number</th><td>1476</td>
-                                <th className="mobile-header">Market rate</th><td>€187.00</td>
-                            </tr>
-                            <tr>
-                                <td>PlayCo Group Universal High</td>
-                                <th className="mobile-header">Number</th><td>1471</td>
-                                <th className="mobile-header">Market rate</th><td>€148.00</td>
-                            </tr>
-                            <tr>
-                                <td>Sterck Inc. Low</td>
-                                <th className="mobile-header">Number</th><td>1978</td>
-                                <th className="mobile-header">Market rate</th><td>€68.23</td>
-                            </tr>
-
-                        </tbody>
-                    </table>
-
-                </div>
-            </div>
+                        )}
+                    </tbody>
+                </table>
+            </Box>
         </Layout>
     );
 }

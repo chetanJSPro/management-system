@@ -44,7 +44,7 @@ function Readattendence() {
     ];
     return (
         <Layout>
-            <section className='col-8 pt-5'>
+            <section className='col-12 pt-5'>
                 <table className='table table-hover table-responsive'>
                     <thead className='table-light'>
                         <tr>

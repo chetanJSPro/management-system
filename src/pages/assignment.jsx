@@ -3,7 +3,7 @@ import Layout from '../components/layout'
 export default function Assignment() {
     return (
         <Layout>
-            <section className='col-8 pt-5'>
+            <section className='col-12 pt-5'>
                 <form>
                     <div className='row justify-content-center'>
                         <div className="form-floating col-5">
