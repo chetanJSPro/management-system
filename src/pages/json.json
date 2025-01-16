@@ -1,0 +1,7 @@
+"student456": {
+    "submissionDate": "2025-01-18T15:30:00Z",
+    "pdfUrl": "https://firebasestorage.googleapis.com/v0/b/your-app-id.appspot.com/o/assignments%2Fa1b2c3%2Fstudent456.pdf?alt=media",
+    "marksAwarded": 92,
+    "feedback": "Excellent explanation of the laws, very clear!",
+    "checked": true // Checked and graded
+}

@@ -4,7 +4,8 @@ import { initializeApp } from "firebase/app";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 import { getAuth } from "firebase/auth";
-import { getDatabase } from "firebase/database";
+import { getDatabase, ref } from "firebase/database";
+import { getStorage } from "firebase/storage";
 // Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyAU7D52G7SC7FzTrorbyEptv49rnqidH2A",
@@ -24,3 +25,7 @@ export { auth };
 const database = getDatabase(fireConfig);
 
 export { database };
+
+const storage = getStorage(fireConfig);
+// const storageRef = ref(storage);
+export { storage };

@@ -1,79 +1,265 @@
-import React from 'react'
-import Layout from '../components/layout'
+import React, { useEffect, useState } from "react";
+import Layout from "../components/layout";
+import fireConfig, { database } from "../firebaseconf";
+import { getDatabase, ref, onValue, push } from "firebase/database";
+import Preloader from "../components/preloader";
+import Alert from "../components/alert";
+import Header from "../components/header";
+import {
+    Button,
+    TextField,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    Typography,
+    Box,
+    Grid,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
+} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import PostAddIcon from '@mui/icons-material/PostAdd';
+import CloseIcon from '@mui/icons-material/Close';
+
 export default function Assignment() {
+    const today = new Date();
+    const fulldate = today.toISOString().split('T')[0];
+    const [loading, setLoading] = useState(false);
+    const [alertVisible, setAlertVisible] = useState(false);
+    const [semesters, setSemesters] = useState([]);
+    const [selectedSemester, setSelectedSemester] = useState("");
+    const [sessionalSubjects, setSessionalSubjects] = useState([]);
+    const [newAssignment, setNewAssignment] = useState({
+        title: "",
+        description: "",
+        subject: "",
+        semester: "",
+        deadline: "",
+        Grades: "",
+    });
+    const [data, setData] = useState();
+    const [formVisible, setFormVisible] = useState(false);
+
+    useEffect(() => {
+        const database = getDatabase(fireConfig);
+        const semesterRef = ref(database, "sessionals");
+
+        onValue(semesterRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                setSemesters(Object.keys(data));
+            }
+        });
+    }, []);
+
+    useEffect(() => {
+        if (selectedSemester) {
+            const database = getDatabase(fireConfig);
+            const subjectRef = ref(database, `subjects/${selectedSemester}`);
+
+            onValue(subjectRef, (snapshot) => {
+                const data = snapshot.val();
+                setSessionalSubjects(data || []);
+            });
+        } else {
+            setSessionalSubjects([]);
+        }
+    }, [selectedSemester]);
+
+    const handleAssignmentChange = (key, value) => {
+        setNewAssignment((prev) => ({
+            ...prev,
+            [key]: value,
+        }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (new Date(newAssignment.deadline) < new Date(fulldate)) {
+            alert("Error: Deadline cannot be earlier than the creation date.");
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const database = getDatabase(fireConfig);
+            const assignmentsRef = ref(database, "assignments");
+
+            // Add createdDate field to the newAssignment object
+            const assignmentWithDate = {
+                ...newAssignment,
+                createdDate: fulldate, // Use the today variable
+            };
+
+            await push(assignmentsRef, assignmentWithDate);
+
+            setNewAssignment({
+                title: "",
+                description: "",
+                subject: "",
+                semester: "",
+                deadline: "",
+                Grades: "",
+            });
+
+            setAlertVisible(true);
+            setTimeout(() => setAlertVisible(false), 3000);
+        } catch (error) {
+            console.error("Error submitting assignment:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        const studentRef = ref(database, "assignments");
+        onValue(studentRef, (snapshot) => {
+            const data = snapshot.val();
+            setData(data);
+        });
+    }, []);
+
     return (
         <Layout>
-            <section className='col-12 pt-5'>
-                <form>
-                    <div className='row justify-content-center'>
-                        <div className="form-floating col-5">
-                            <input name='Assignment title' type="text" className="form-control" id="Assignment-title" placeholder="Assignment title" required />
-                            <label htmlFor="Assignment-title" className='ms-3'>Assignment title</label>
-                        </div>
-                        <div className="form-floating ps-3 mb-3 col-5">
-                            <input name='Assignment Grade' type="text" className="form-control" id="Assignment-Grade" placeholder="Assignment Grade" required />
-                            <label htmlFor="Assignment-Grade" className='ms-3'>Assignment Grade</label>
-                        </div>
-                        <div className="form-floating mb-3 col-5">
-                            <input name='Assignment deadline' type="date" className="form-control" id="Assignment-deadline" placeholder="Assignment deadline" />
-                            <label htmlFor="Assignment-deadline" className='ms-3'>Assignment deadline</label>
-                        </div>
-                        <div className="form-floating ps-3 mb-3 col-5">
-                            <input name='Subject' type="text" className="form-control" id="Subject" placeholder="Subject" required />
-                            <label htmlFor="Subject" className='ms-3'>Subject</label>
-                        </div>
-                        <div className="form-floating mb-3 col-10">
-                            <textarea name='Assignment description' placeholder="Assignment description" className="form-control" id="Assignment-description" style={{ height: "100px" }}></textarea>
-                            <label htmlFor="Assignment-description" className='ms-3'>Assignment description</label>
-                        </div>
-                    </div>
-                    <button type="submit" className='w-10 btn btn-outline-primary offset-1 '>➕ Add</button>
-                </form>
+            <Header title="Add Assignment" />
+            <Box sx={{ padding: "2rem" }}>
+                {alertVisible && <Alert message="Assignment submitted successfully!" />}
+                {loading && <Preloader />}
 
-                <h3 className='mt-5 ps-3 text-capitalize text-center'>Previous Assignments:-</h3>
+                <Button
+                    variant="contained"
+                    size="large"
+                    onClick={() => setFormVisible((prev) => !prev)}
+                    sx={{ marginBottom: "1rem" }}
+                >
+                    {formVisible ? <CloseIcon /> : <PostAddIcon />}
+                    {formVisible ? "Hide Form" : "Add Assignment"}
+                </Button>
 
-                <div class="accordion text-center offset-1 col-10 mt-4" id="accordionExample">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                Accordion Item #1
-                            </button>
-                        </h2>
-                        <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
-                            <div class="accordion-body">
-                                <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-                                <br /> <button className='mt-3 btn btn-outline-secondary'>Check Submissions</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                Accordion Item #2
-                            </button>
-                        </h2>
-                        <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                            <div class="accordion-body">
-                                <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-                                <br /> <button className='mt-3 btn btn-outline-secondary'>Check Submissions</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                                Accordion Item #3
-                            </button>
-                        </h2>
-                        <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                            <div class="accordion-body">
-                                <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-                                <br /> <button className='mt-3 btn btn-outline-secondary'>Check Submissions</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </Layout>
-    )
+                {formVisible && (
+                    <form onSubmit={handleSubmit}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} sm={6} md={4}>
+                                <TextField
+                                    label="Assignment Title"
+                                    value={newAssignment.title}
+                                    onChange={(e) => handleAssignmentChange("title", e.target.value)}
+                                    required
+                                    fullWidth
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6} md={4}>
+                                <TextField
+                                    type="date"
+                                    label="Deadline"
+                                    InputLabelProps={{ shrink: true }}
+                                    value={newAssignment.deadline}
+                                    onChange={(e) => handleAssignmentChange("deadline", e.target.value)}
+                                    required
+                                    fullWidth
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6} md={4}>
+                                <TextField
+                                    type="number"
+                                    label="Grade"
+                                    value={newAssignment.Grades}
+                                    onChange={(e) => handleAssignmentChange("Grades", e.target.value)}
+                                    required
+                                    fullWidth
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6} md={4}>
+                                <FormControl fullWidth>
+                                    <InputLabel>Select Semester</InputLabel>
+                                    <Select
+                                        value={selectedSemester}
+                                        onChange={(e) => { handleAssignmentChange("semester", e.target.value); setSelectedSemester(e.target.value); }}
+                                        required
+                                    >
+                                        <MenuItem value="">Select Semester</MenuItem>
+                                        {semesters.map((semester) => (
+                                            <MenuItem key={semester} value={semester}>{semester}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+
+                            <Grid item xs={12} sm={6} md={4}>
+                                <FormControl fullWidth>
+                                    <InputLabel>Select Subject</InputLabel>
+                                    <Select
+                                        value={newAssignment.subject}
+                                        onChange={(e) => handleAssignmentChange("subject", e.target.value)}
+                                        required
+                                        disabled={!sessionalSubjects.length}
+                                    >
+                                        <MenuItem value="">Select Subject</MenuItem>
+                                        {Object.values(sessionalSubjects).map((subject, index) => (
+                                            <MenuItem key={index} value={subject.subject}>{subject.subject}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <TextField
+                                    label="Description"
+                                    multiline
+                                    rows={4}
+                                    value={newAssignment.description}
+                                    onChange={(e) => handleAssignmentChange("description", e.target.value)}
+                                    required
+                                    fullWidth
+                                />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={loading}
+                                >
+                                    Submit
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </form>
+                )}
+
+                <Typography variant="h5" sx={{ textTransform: 'uppercase', marginTop: "2rem", textAlign: "center" }}>
+                    Previous Assignments:
+                </Typography>
+
+                {data ? (
+                    Object.keys(data).map((key, index) => (
+                        <Accordion key={key} sx={{ marginTop: "1rem", boxShadow: 4 }}>
+                            <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-controls={`panel-${index}-content`}
+                                id={`panel-${index}-header`}
+                            >
+                                <Typography>{index + 1}. {data[key].title}</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Typography>{data[key].description}</Typography>
+                                <Button variant="outlined" sx={{ marginTop: "1rem" }}>
+                                    Check Submissions
+                                </Button>
+                            </AccordionDetails>
+                        </Accordion>
+                    ))
+                ) : (
+                    <Typography>Loading data...</Typography>
+                )}
+            </Box>
+        </Layout >
+    );
 }

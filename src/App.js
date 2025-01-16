@@ -18,6 +18,7 @@ import Assignment from './pages/assignment.jsx';
 import StudentCheckMarks from './pages/check-marks.jsx';
 import Sessionals from './pages/sessionals.jsx';
 import Header from './components/header.jsx';
+import SubmitAssignment from './pages/submit-assignment.jsx';
 function App() {
   return (
 
@@ -27,6 +28,7 @@ function App() {
         <Routes>
           <Route path="/updatemarks" element={<Updatemarks />} />
           <Route path="/header" element={<Header />} />
+          <Route path="/submit-assignment" element={<SubmitAssignment />} />
 
           <Route path="/assignment" element={<Assignment />} />
           <Route path="/teacher-dashboard" element={<Teacherdashboard />} />
@@ -35,7 +37,7 @@ function App() {
 
           <Route path="/nav" element={<Topnav />} />
 
-          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Login />} />
 
           <Route path="/signup" element={<Signup />} />
           <Route path="/side" element={<Nav />} />

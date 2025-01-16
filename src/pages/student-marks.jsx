@@ -38,16 +38,6 @@ export default function Sessionals() {
         [selectedSemester]);
     console.log(sessionalsubjects); // to run on change in semester feild
 
-    // const handlesessionalsChange = (subject, rollNo, value) => {
-    //     setsessionals((prev) => ({
-    //         ...prev,
-    //         [rollNo]: {
-    //             ...(prev[rollNo]),
-    //             [subject]: value,
-    //         },
-    //     }));
-    // };
-
     const checksubject = (key) => {
         return key.replace(/[./#$\[\]]/g, '_');
     };
@@ -70,32 +60,6 @@ export default function Sessionals() {
             setData(data);
         });
     }, []);
-
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
-    //     setLoading(true);
-    //     try {
-    //         const sessionalsdata = {};
-    //         Object.values(data).forEach((student) => {
-    //             const rollNo = student.rollNo;
-    //             if (sessionals[rollNo]) {
-    //                 sessionalsdata[rollNo] = {
-    //                     ...sessionals[rollNo],
-    //                 };
-    //             }
-    //         });
-
-    //         const sessionalRef = ref(database, `finalMarks/${selectedSemester}`);
-    //         await update(sessionalRef, sessionalsdata);
-
-    //         setAlertVisible(true);
-    //         setTimeout(() => setAlertVisible(false), 3000);
-    //     } catch (error) {
-    //         console.error("Error updating sessionals:", error);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
