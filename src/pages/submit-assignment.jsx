@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getDownloadURL, ref as storageRef, uploadBytesResumable } from 'firebase/storage';
-import { getDatabase, ref as dataRef, onValue, update } from "firebase/database";
+import { getDatabase, ref as dataRef, onValue, update, get, child } from "firebase/database";
 import { Accordion, AccordionDetails, AccordionSummary, Button, TextField, Typography, CircularProgress, Alert, Box, Grid } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { storage } from '../firebaseconf';
@@ -18,6 +18,7 @@ export default function SubmitAssignment() {
     const [data, setData] = useState();
     const [assignments, setAssignments] = useState([]);
     const [formvisible, setFormVisible] = useState(false);
+    const [checkroll, setCheckRoll] = useState([]);
 
     useEffect(() => {
         const studentRef = dataRef(getDatabase(), "assignments");
@@ -26,6 +27,11 @@ export default function SubmitAssignment() {
             setData(data);
         });
     }, []);
+
+    useEffect(() => {
+        setCheckRoll(data && Object.keys(data).map((key) => data[key].submissions));
+        console.log(checkroll);
+    }, [data]);
 
     const today = new Date();
     const fulldate = today.toISOString().split('T')[0];
@@ -37,9 +43,16 @@ export default function SubmitAssignment() {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!file) return;
+
+        const snapshot = await get(child(dataRef(getDatabase()), `assignments/${assignments}/submissions/${rollno}`));
+        if (snapshot.exists()) {
+            alert(`Roll number ${rollno} has already submitted this assignment.`);
+            setLoading(false);
+            return;
+        }
 
         const storagedataRef = storageRef(storage, `/files/${file.name}`);
         const uploadTask = uploadBytesResumable(storagedataRef, file);
@@ -61,7 +74,6 @@ export default function SubmitAssignment() {
             }
         );
     };
-
     const handleSubmitchange = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -119,16 +131,16 @@ export default function SubmitAssignment() {
                             {formvisible && assignments === key && (
                                 <Box
                                     component="form"
+                                    className='mt-5'
                                     onSubmit={handleSubmitchange}
                                     sx={{
-                                        mt: 2,
-                                        width: "100%", // Full width of the parent container
-                                        maxWidth: "70%", // Optional: Limit maximum form width
-                                        margin: "0 auto", // Center the form
+                                        mt: 3,
+                                        width: "100%",
+                                        maxWidth: "70%",
+                                        margin: "0 auto",
                                     }}
                                 >
                                     <Grid container spacing={2}>
-                                        {/* Roll Number Input */}
                                         <Grid item xs={12} sm={6}>
                                             <TextField
                                                 type="number"
@@ -138,7 +150,6 @@ export default function SubmitAssignment() {
                                                 onChange={(e) => setRollno(e.target.value)}
                                                 sx={{
                                                     "& .MuiInputBase-root": {
-                                                        height: "45px", // Adjust input height
                                                     },
                                                 }}
                                             />
@@ -151,8 +162,8 @@ export default function SubmitAssignment() {
                                                 component="label"
                                                 fullWidth
                                                 sx={{
-                                                    height: "45px", // Consistent button height
-                                                    textTransform: "none", // Keep text casing natural
+                                                    height: "45px",
+                                                    textTransform: "none",
                                                 }}
                                             >
                                                 Upload Assignment
@@ -165,7 +176,6 @@ export default function SubmitAssignment() {
                                             </Button>
                                         </Grid>
 
-                                        {/* Upload Confirmation */}
                                         <Grid item xs={12}>
                                             <Button
                                                 variant="outlined"
@@ -179,10 +189,7 @@ export default function SubmitAssignment() {
                                             </Button>
                                             {Url && (
                                                 <Typography variant="body2" sx={{ mt: 1, textAlign: "center" }}>
-                                                    Uploaded! Your file URL:{" "}
-                                                    <a href={Url} target="_blank" rel="noopener noreferrer">
-                                                        {Url}
-                                                    </a>
+                                                    Your assignment is uploaded successfully!!! Now submit the assignment ⬇️
                                                 </Typography>
                                             )}
                                         </Grid>

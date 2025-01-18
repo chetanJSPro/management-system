@@ -25,6 +25,8 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import logo from "../assets/images/logo.png";
 import { Button, CssBaseline } from '@mui/material';
 import ReceiptIcon from '@mui/icons-material/Receipt';
+import FactCheckIcon from '@mui/icons-material/FactCheck';
+import PublishIcon from '@mui/icons-material/Publish';
 
 const drawerWidth = 240;
 
@@ -173,6 +175,20 @@ export default function Layout({ children }) {
                             <ReceiptIcon />
                         </ListItemIcon>
                         <ListItemText primary="Assignments" />
+                    </ListItem>
+
+                    <ListItem button component="a" href="/check-assignment">
+                        <ListItemIcon>
+                            <FactCheckIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Check Assignments" />
+                    </ListItem>
+
+                    <ListItem button component="a" href="/submit-assignment">
+                        <ListItemIcon>
+                            <PublishIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Submit Assignments" />
                     </ListItem>
 
                     <ListItem button component="a" href="/check-attendence">
