@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../components/layout";
 import fireConfig, { database } from "../firebaseconf";
-import { getDatabase, ref, onValue, push } from "firebase/database";
+import { getDatabase, ref, onValue, push, get, update } from "firebase/database";
 import Preloader from "../components/preloader";
 import Alert from "../components/alert";
 import Header from "../components/header";
@@ -30,7 +30,12 @@ export default function Assignment() {
     const [alertVisible, setAlertVisible] = useState(false);
     const [semesters, setSemesters] = useState([]);
     const [selectedSemester, setSelectedSemester] = useState("");
-    const [sessionalSubjects, setSessionalSubjects] = useState([]);
+    const [selectedSubject, setselectedSubject] = useState([]);
+    const [students, setStudents] = useState({});
+    const [data, setData] = useState();
+    const [formVisible, setFormVisible] = useState(false);
+    const [checkedsub, setCheckedSub] = useState();
+    const [Subject, setSubject] = useState([]);
     const [newAssignment, setNewAssignment] = useState({
         title: "",
         description: "",
@@ -39,8 +44,13 @@ export default function Assignment() {
         deadline: "",
         Grades: "",
     });
-    const [data, setData] = useState();
-    const [formVisible, setFormVisible] = useState(false);
+    useEffect(() => {
+        const studentRef = ref(database, 'students');
+        onValue(studentRef, (snapshot) => {
+            const data = snapshot.val();
+            setStudents(data);
+        });
+    }, []);
 
     useEffect(() => {
         const database = getDatabase(fireConfig);
@@ -61,19 +71,34 @@ export default function Assignment() {
 
             onValue(subjectRef, (snapshot) => {
                 const data = snapshot.val();
-                setSessionalSubjects(data || []);
+                setselectedSubject(data || []);
             });
         } else {
-            setSessionalSubjects([]);
+            setselectedSubject([]);
         }
     }, [selectedSemester]);
 
+    const checksubject = (key) => {
+        return key.toString().replace(/[./#$\[\]]/g, '_');
+    };
+
     const handleAssignmentChange = (key, value) => {
+        setCheckedSub(checksubject(Subject));
+        console.log(checkedsub);
         setNewAssignment((prev) => ({
             ...prev,
             [key]: value,
         }));
     };
+    useEffect(() => {
+        const studentRef = ref(database, "students");
+        onValue(studentRef, (snapshot) => {
+            const data = snapshot.val();
+            const students = Object.values(data).map((student) => student.Assignment) || {};
+            setData(students);
+            console.log(students);
+        });
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -85,42 +110,41 @@ export default function Assignment() {
         setLoading(true);
 
         try {
-            const database = getDatabase(fireConfig);
-            const assignmentsRef = ref(database, "assignments");
+            for (const studentId of Object.keys(students)) {
+                const studentRef = ref(database, `students/${studentId}`);
 
-            // Add createdDate field to the newAssignment object
-            const assignmentWithDate = {
-                ...newAssignment,
-                createdDate: fulldate, // Use the today variable
-            };
+                const studentDataSnapshot = await get(studentRef);
+                const studentData = studentDataSnapshot.val();
 
-            await push(assignmentsRef, assignmentWithDate);
+                if (studentData) {
+                    const updatedStudentData = {
+                        ...studentData,
+                        Assignment: {
+                            ...(studentData?.Assignment || {}),
+                            [selectedSemester]: {
+                                ...(studentData?.Assignment?.[selectedSemester] || {}),
+                                [checkedsub]: {
+                                    ...(studentData?.Assignment?.[selectedSemester]?.[checkedsub]),
+                                    ...newAssignment,
+                                    createdDate: fulldate,
+                                }
+                            }
+                        }
+                    };
 
-            setNewAssignment({
-                title: "",
-                description: "",
-                subject: "",
-                semester: "",
-                deadline: "",
-                Grades: "",
-            });
+                    await update(studentRef, updatedStudentData);
+                }
+            }
 
             setAlertVisible(true);
             setTimeout(() => setAlertVisible(false), 3000);
+            setTimeout(() => window.location.reload(), 3500);
         } catch (error) {
             console.error("Error submitting assignment:", error);
         } finally {
             setLoading(false);
         }
     };
-
-    useEffect(() => {
-        const studentRef = ref(database, "assignments");
-        onValue(studentRef, (snapshot) => {
-            const data = snapshot.val();
-            setData(data);
-        });
-    }, []);
 
     return (
         <Layout>
@@ -181,8 +205,7 @@ export default function Assignment() {
                                     <Select
                                         value={selectedSemester}
                                         onChange={(e) => { handleAssignmentChange("semester", e.target.value); setSelectedSemester(e.target.value); }}
-                                        required
-                                    >
+                                        required >
                                         <MenuItem value="">Select Semester</MenuItem>
                                         {semesters.map((semester) => (
                                             <MenuItem key={semester} value={semester}>{semester}</MenuItem>
@@ -196,12 +219,12 @@ export default function Assignment() {
                                     <InputLabel>Select Subject</InputLabel>
                                     <Select
                                         value={newAssignment.subject}
-                                        onChange={(e) => handleAssignmentChange("subject", e.target.value)}
+                                        onChange={(e) => { handleAssignmentChange("subject", e.target.value); setSubject(e.target.value); }}
                                         required
-                                        disabled={!sessionalSubjects.length}
+                                        disabled={!selectedSubject.length}
                                     >
                                         <MenuItem value="">Select Subject</MenuItem>
-                                        {Object.values(sessionalSubjects).map((subject, index) => (
+                                        {Object.values(selectedSubject).map((subject, index) => (
                                             <MenuItem key={index} value={subject.subject}>{subject.subject}</MenuItem>
                                         ))}
                                     </Select>
@@ -246,7 +269,7 @@ export default function Assignment() {
                                 aria-controls={`panel-${index}-content`}
                                 id={`panel-${index}-header`}
                             >
-                                <Typography>{index + 1}. {data[key].title}</Typography>
+                                <Typography>{index + 1}. {data[key]}</Typography>
                             </AccordionSummary>
                             <AccordionDetails>
                                 <Typography>{data[key].description}</Typography>

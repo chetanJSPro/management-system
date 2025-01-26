@@ -1,113 +1,185 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '../components/layout';
-import { onValue, ref, set, update } from 'firebase/database';
+import { equalTo, onValue, orderByChild, query, ref, update } from 'firebase/database';
 import { database } from '../firebaseconf';
-import { Filter } from '@mui/icons-material';
+import Preloader from '../components/preloader';
+import Alert from '../components/alert';
+import Header from '../components/header';
 
 export default function StudentCheckMarks() {
-    const [data, setData] = useState([]);
-    const [rollNo, setRollNo] = useState('');
-    const [filteredData, setFilteredData] = useState([]);
+    const [data, setData] = useState(null);
+    const [sessionals, setsessionals] = useState({});
+    const [alertVisible, setAlertVisible] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [semesters, setSemesters] = useState([]);
+    const [selectedSemester, setSelectedSemester] = useState('');
+    const [sessionalsubjects, setSessionalSubjects] = useState([]);
+    const [marks, setMarks] = useState(0);
+    const [roll, setRoll] = useState();
+    const [test, settest] = useState("");
     useEffect(() => {
-        const dataRef = ref(database, 'students');
-        const unsubscribe = onValue(dataRef, (snapshot) => {
-            const fetchedData = snapshot.val();
-            setData(fetchedData);
+        const subjectsRef = ref(database, 'sessionals');
+        onValue(subjectsRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                const semesterKeys = Object.keys(data);
+                setSemesters(semesterKeys);
+            }
         });
-
-        return () => unsubscribe();
     }, []);
 
-    // console.log(data);
-    function handleChange(e) {
-        setRollNo(e.target.value);
-    }
-
-    function handleSubmit() {
-        if (data) {
-            const filtered = Object.keys(data).filter((key) => data[key].rollNo === rollNo);
-
-            setFilteredData(filtered);
+    useEffect(() => {
+        if (selectedSemester) {
+            const subjectRef = ref(database, `subjects/${selectedSemester}`);
+            onValue(subjectRef, (snapshot) => {
+                const data = snapshot.val();
+                setSessionalSubjects(data);
+            });
         }
-    }
+    },
+        [selectedSemester]);
+    // console.log(sessionalsubjects); // to run on change in semester feild
+
+    const checksubject = (key) => {
+        return key.replace(/[./#$\[\]]/g, '_');
+    };
+
+    const handlesessionalsChange = (subject, rollNo, value) => {
+        const sanitizedSubject = checksubject(subject);
+        setsessionals((prev) => ({
+            ...prev,
+            [rollNo]: {
+                ...(prev[rollNo]),
+                [sanitizedSubject]: value,
+            },
+        }));
+    };
+
+    useEffect(() => {
+        const studentRef = ref(database, 'students');
+        onValue(studentRef, (snapshot) => {
+            const data = snapshot.val();
+            setData(data);
+        });
+    }, []);
+
+    useEffect(() => {
+        const studentRef = ref(database, 'finalMarks');
+        onValue(studentRef, (snapshot) => {
+            const data = snapshot.val();
+            setMarks(data);
+        });
+    }, []);
+    // console.log(marks); 
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const userData = ref(database, `finalMarks/${selectedSemester}`);
+            onValue(userData, (snapshot) => {
+                const data = snapshot.val();
+
+                settest(data ? Object.values(userData).find((item) => item === roll) : "cvkubku,j")
+            });
+
+            // const sessionalRef = ref(database, `finalMarks/${selectedSemester}`);
+            // await update(sessionalRef, sessionalsdata); orderByChild("Email").equalTo("test@domain.com"))
+            setAlertVisible(true);
+            setTimeout(() => setAlertVisible(false), 3000);
+        } catch (error) {
+            console.error("Error updating sessionals:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    // console.log(finaldata);
+    console.log(test);
+    // console.log(roll);
 
     return (
         <Layout>
-            <section className='col-12 pt-5 mx-auto'>
-                <h1 className='text-center mb-4'>Check Marks</h1>
+            <Header title="Update Final Marks" />
+            <section className="col-12 pt-5">
+                <div className="row justify-content-center">
 
-                <div class="form-floating mb-3 col-7">
-                    <input onChange={handleChange} type="number" class="form-control" id="floatingInput" placeholder="123456789" />
-                    <label for="floatingInput">Roll no.</label>
-                </div>
+                    {alertVisible && <Alert message="Form submitted successfully!" />}
+                    {loading && <Preloader />}
+                    <div className="form-group form-floating col-5 ms-3">
+                        <select aria-label="Floating label select example" required id="semester" className="form-select" value={selectedSemester} onChange={(e) =>
+                            setSelectedSemester(e.target.value)
+                        }>
+                            <option value="" selected>
+                                -----------
+                            </option>
+                            {semesters.map((semester) => (
+                                <option key={semester} value={semester}>
+                                    {semester}
+                                </option>
+                            ))}
+                        </select>
+                        <label htmlFor="floatingSelect">Select Semester:</label>
+                    </div>
 
-                <button type="submit" className='w-25  btn btn-outline-dark mb-5' onClick={handleSubmit}>Submit</button>
+                    <form onSubmit={handleSubmit} className="col-10 mt-4">
+                        <div className="row justify-content-center ms-3">
+                            <input className='form-control col-4' type="number" onChange={(e) => setRoll(e.target.value)} />
+                            <button type="submit" className="btn btn-outline-danger offset-1 ">
+                                Submit
+                            </button>
+                            {/* <p>{test}</p> */}
+                            {/* {selectedSemester ? <table className="table table-hover table-responsive">
+                                <thead className="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Roll No</th>
+                                        {Object.values(sessionalsubjects).map((sub) => (
 
-                <div className='row justify-content-center table-responsive '>
-                    <table className='table table-hover'>
-                        <thead className='table-light'>
-                            <tr>
-                                <th>#</th>
-                                <th>Name</th>
-                                <th>Roll No</th>
-                                <th>English</th>
-                                <th>Maths</th>
-                                <th>Physics</th>
-                                <th>Fundamentals of IT</th>
-                            </tr>
-                        </thead>
-                        {/* <tbody>
-                            {data ? (
-                                Object.keys(data).map((marks, index) => (
-                                    <tr key={marks}>
-                                        <td>{index + 1}</td>
-                                        <td>{data[marks].Name || 'N/A'}</td>
-                                        <td>{data[marks].rollNo || 'N/A'}</td>
-                                        <td>
-                                            {data[marks].marks.English || 'N/A'}
-                                        </td>
-                                        <td>
-                                            {data[marks].marks.Maths || 'N/A'}
-                                        </td>
-                                        <td>
-                                            {data[marks].marks.Physics || 'N/A'}
-                                        </td>
-                                        <td>
-                                            {data[marks].marks.IT || 'N/A'}
-                                        </td>
+                                            <th key={sub.id}>{sub.subject}</th>
+                                        )
+                                        )}
                                     </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan="7" className="text-center">
-                                        Loading data...
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody> */}
-                        <tbody>
-                            {filteredData.length > 0 ? (
-                                filteredData.map((marks, index) => (
-                                    <tr key={marks}>
-                                        <td>{index + 1}</td>
-                                        <td>{data[marks].Name || 'N/A'}</td>
-                                        <td>{data[marks].rollNo || 'N/A'}</td>
-                                        <td>{data[marks].marks.English || 'N/A'}</td>
-                                        <td>{data[marks].marks.Maths || 'N/A'}</td>
-                                        <td>{data[marks].marks.Physics || 'N/A'}</td>
-                                        <td>{data[marks].marks.IT || 'N/A'}</td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan="7" className="text-center">No data available</td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+                                </thead>
+                                <tbody>
+                                    {data ? (
+                                        Object.keys(data).map((key, index) => (
+                                            <tr key={key.id}>
+                                                <td>{index + 1}</td>
+                                                <td>{data[key].Name}</td>
+                                                <td>{data[key].rollNo}</td>
+                                                {Object.values(sessionalsubjects).map((sub) => (
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            className="form-control"
+                                                            onChange={(e) =>
+                                                                handlesessionalsChange(sub.subject, data[key].rollNo, e.target.value)
+                                                            }
 
+                                                        />
+                                                    </td>
+                                                ))}
+
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="7" className="text-center">
+                                                Loading data...
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                                <button type="submit" className="btn btn-outline-danger offset-1 ">
+                                    Submit
+                                </button>
+                            </table>
+                                : null} */}
+                        </div>
+                    </form>
+                </div>
             </section>
-        </Layout>
+        </Layout >
     );
 }

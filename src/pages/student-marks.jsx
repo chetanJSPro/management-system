@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '../components/layout';
-import { onValue, ref, update } from 'firebase/database';
+import { get, onValue, ref, update } from 'firebase/database';
 import { database } from '../firebaseconf';
 import Preloader from '../components/preloader';
 import Alert from '../components/alert';
 import Header from '../components/header';
 
-export default function Sessionals() {
+export default function Updatemarks() {
     const [data, setData] = useState(null);
     const [sessionals, setsessionals] = useState({});
     const [alertVisible, setAlertVisible] = useState(false);
@@ -42,17 +42,21 @@ export default function Sessionals() {
         return key.replace(/[./#$\[\]]/g, '_');
     };
 
-    const handlesessionalsChange = (subject, rollNo, value) => {
-        const sanitizedSubject = checksubject(subject);
+    const handlesessionalsChange = (subject, id, value) => {
+        const checkedsub = checksubject(subject);
         setsessionals((prev) => ({
             ...prev,
-            [rollNo]: {
-                ...(prev[rollNo]),
-                [sanitizedSubject]: value,
-            },
+            [id]: {
+                ...(prev[id]),
+                FinalMarks: {
+                    [selectedSemester]: {
+                        ...(prev[id]?.FinalMarks?.[selectedSemester]),
+                        [checkedsub]: value,
+                    }
+                }
+            }
         }));
     };
-
     useEffect(() => {
         const studentRef = ref(database, 'students');
         onValue(studentRef, (snapshot) => {
@@ -65,23 +69,28 @@ export default function Sessionals() {
         e.preventDefault();
         setLoading(true);
         try {
-            const sessionalsdata = {};
-            Object.values(data).forEach((student) => {
-                const rollNo = student.rollNo;
-                if (sessionals[rollNo]) {
-                    const checkedData = {};
-                    Object.entries(sessionals[rollNo]).forEach(([key, value]) => {
-                        checkedData[checksubject(key)] = value;
-                    });
-                    sessionalsdata[rollNo] = checkedData;
-                }
-            });
+            for (const studentId of Object.keys(data)) {
+                const studentRef = ref(database, `students/${studentId}`);
 
-            const sessionalRef = ref(database, `finalMarks/${selectedSemester}`);
-            await update(sessionalRef, sessionalsdata);
+                const studentDataSnapshot = await get(studentRef);
+                const studentData = studentDataSnapshot.val();
+
+                if (studentData) {
+                    const updatedStudentData = {
+                        ...studentData,
+                        FinalMarks: {
+                            ...(studentData?.FinalMarks || {}),
+                            [selectedSemester]: sessionals[studentId]?.FinalMarks?.[selectedSemester] || {},
+                        }
+                    };
+
+                    await update(studentRef, updatedStudentData);
+                }
+            }
 
             setAlertVisible(true);
             setTimeout(() => setAlertVisible(false), 3000);
+            setTimeout(() => window.location.reload(), 3500);
         } catch (error) {
             console.error("Error updating sessionals:", error);
         } finally {
@@ -141,7 +150,7 @@ export default function Sessionals() {
                                                             type="number"
                                                             className="form-control"
                                                             onChange={(e) =>
-                                                                handlesessionalsChange(sub.subject, data[key].rollNo, e.target.value)
+                                                                handlesessionalsChange(sub.subject, key, e.target.value)
                                                             }
 
                                                         />

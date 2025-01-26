@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import "../styles/scss/component.scss";
 import Layout from '../components/layout';
-import { ref, onValue, update } from 'firebase/database';
+import { ref, onValue, update, get } from 'firebase/database';
 import { database } from '../firebaseconf';
 import Header from '../components/header';
+
+import Alert from "../components/alert";
+import Preloader from '../components/preloader';
 function SemesterWiseAttendance() {
     const today = new Date();
     const fulldate = today.toISOString().split('T')[0];
@@ -14,6 +17,8 @@ function SemesterWiseAttendance() {
     const [students, setStudents] = useState({});
     const [attendance, setAttendance] = useState({});
 
+    const [alertVisible, setAlertVisible] = useState(false);
+    const [loading, setLoading] = useState(false);
     useEffect(() => {
         const subjectsRef = ref(database, 'subjects');
         onValue(subjectsRef, (snapshot) => {
@@ -43,40 +48,80 @@ function SemesterWiseAttendance() {
             setStudents(data);
         });
     }, []);
+    const checksubject = (key) => {
+        return key.replace(/[./#$\[\]]/g, '_');
+    };
 
-    const handleAttendanceChange = (rollNo, value) => {
+    const handleAttendanceChange = (id, value) => {
+        const checkedsub = checksubject(selectedSubject);
+        console.log(checkedsub);
+
         setAttendance((prev) => ({
             ...prev,
-            [rollNo]: value,
+            [id]: {
+                ...(prev[id]),
+                Attendance: {
+                    [selectedSemester]: {
+                        ...(prev[id]?.Attendance?.[selectedSemester]),
+                        [checkedsub]: {
+                            ...(prev[id]?.Attendance?.[selectedSemester]?.[checkedsub]),
+                            date: fulldate,
+                            Status: value,
+                        }
+                    }
+                }
+            }
         }));
     };
 
     const submitForm = async (e) => {
         e.preventDefault();
-
+        setLoading(true);
+        const checkedsub = checksubject(selectedSubject);
+        console.log(checkedsub);
         try {
-            const attendanceData = {};
-            Object.values(students).forEach((student) => {
-                const rollNo = student.rollNo;
-                attendanceData[rollNo] = {
-                    Attendence: attendance[rollNo],
-                };
-            });
+            for (const studentId of Object.keys(students)) {
+                const studentRef = ref(database, `students/${studentId}`);
 
-            const attendanceRef = ref(database, `attendence/${selectedSemester}/${selectedSubject}/${fulldate}`);
-            await update(attendanceRef, attendanceData);
+                const studentDataSnapshot = await get(studentRef);
+                const studentData = studentDataSnapshot.val();
 
-            alert('Attendance submitted successfully!');
+                if (studentData) {
+                    const updatedStudentData = {
+                        ...studentData,
+                        Attendance: {
+                            ...(studentData?.Attendance || {}),
+                            [selectedSemester]: {
+                                ...(studentData?.Attendance?.[selectedSemester] || {}),
+                                [checkedsub]: {
+                                    ...(studentData?.Attendance?.[selectedSemester]?.[checkedsub]),
+                                    date: fulldate,
+                                    Status: attendance[studentId]?.Attendance?.[selectedSemester]?.[checkedsub]?.Status || false,
+                                }
+                            }
+                        }
+                    };
+
+                    await update(studentRef, updatedStudentData);
+                }
+            }
+
+            setAlertVisible(true);
+            setTimeout(() => setAlertVisible(false), 3000);
+            setTimeout(() => window.location.reload(), 3500);
         } catch (error) {
             console.error('Error updating attendance:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <Layout>
             <Header title="Update Attendance" />
+            {alertVisible && <Alert message="Form submitted successfully!" />}
+            {loading && <Preloader />}
             <form id="attendanceForm" onSubmit={submitForm} className="col-12 p-5">
-
                 <p>Today: {fulldate}</p>
                 <div className='row'>
                     <div className="form-group form-floating col-5">
@@ -128,33 +173,33 @@ function SemesterWiseAttendance() {
                             </thead>
                             <tbody>
                                 {Object.keys(students).length > 0 ? (
-                                    Object.values(students).map((student) => (
-                                        <tr key={student.rollNo}>
-                                            <td>{student.Name}</td>
-                                            <td>{student.rollNo}</td>
+                                    Object.keys(students).map((student) => (
+                                        <tr key={students[student].rollNo}>
+                                            <td>{students[student].Name}</td>
+                                            <td>{students[student].rollNo}</td>
                                             <td>
                                                 <div className="form-check form-check-inline">
                                                     <input
                                                         type="radio"
 
-                                                        id={student.rollNo}
-                                                        name={student.rollNo}
+                                                        id={students[student].rollNo}
+                                                        name={students[student].rollNo}
                                                         value="present"
                                                         className="form-check-input"
-                                                        onChange={() => handleAttendanceChange(student.rollNo, 'present')} />
-                                                    <label className="form-check-label" htmlFor={student.rollNo}>
+                                                        onChange={() => handleAttendanceChange(student, 'present')} />
+                                                    <label className="form-check-label" htmlFor={students[student].rollNo}>
                                                         Present
                                                     </label>
                                                 </div>
                                                 <div className="form-check form-check-inline">
                                                     <input
                                                         type="radio"
-                                                        id={student.rollNo}
-                                                        name={student.rollNo}
+                                                        id={students[student].rollNo}
+                                                        name={students[student].rollNo}
                                                         value="absent"
                                                         className="form-check-input"
-                                                        onChange={() => handleAttendanceChange(student.rollNo, 'absent')} />
-                                                    <label className="form-check-label" htmlFor={student.rollNo}>
+                                                        onChange={() => handleAttendanceChange(student, 'absent')} />
+                                                    <label className="form-check-label" htmlFor={students[student].rollNo}>
                                                         Absent
                                                     </label>
                                                 </div>

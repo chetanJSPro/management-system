@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { TextField, Button, Grid, Typography, Box, Snackbar, CircularProgress } from '@mui/material';
+import { Alert as MuiAlert } from '@mui/material';
 import Layout from '../components/layout';
 import fireConfig from "../firebaseconf";
 import { getDatabase, ref, onValue, push } from "firebase/database";
-import Preloader from '../components/preloader';
-import Alert from '../components/alert';
 import Header from '../components/header';
 
 export default function StudentForm() {
@@ -18,11 +18,9 @@ export default function StudentForm() {
         const database = getDatabase(fireConfig);
         const collectionRef = ref(database, "students");
 
-        // Fetch data once when component mounts
         const unsubscribe = onValue(collectionRef, (snapshot) => {
             const dataItem = snapshot.val();
             if (dataItem) {
-                // Map entries to include their unique keys
                 const displayItem = Object.keys(dataItem).map(key => ({
                     id: key,
                     ...dataItem[key]
@@ -34,7 +32,6 @@ export default function StudentForm() {
             }
         });
 
-        // Cleanup listener on unmount
         return () => unsubscribe();
     }, []);
 
@@ -54,12 +51,12 @@ export default function StudentForm() {
 
         try {
             const newStudentRef = await push(collectionRef, newStudent);
-            console.log("Student added with ID:", newStudentRef.key); // Log the unique ID of the new student
+            console.log("Student added with ID:", newStudentRef.key);
             setNewStudent({
                 Name: '', email: '', rollNo: '', Mothername: '', Fathername: '', Branch: '', phoneNo: '', address: '', DOB: ''
             });
             setAlertVisible(true);
-            setTimeout(() => setAlertVisible(false), 3000); // Hide alert after 3 seconds
+            setTimeout(() => setAlertVisible(false), 3000);
         } catch (error) {
             console.error("Error adding student:", error);
         } finally {
@@ -70,51 +67,125 @@ export default function StudentForm() {
     return (
         <Layout>
             <Header title="Add Student" />
-            <section className='col-12 pt-5'>
-                {alertVisible && <Alert message="Form submitted successfully!" />}
-                {loading && <Preloader />}
+            <Box component="section" sx={{ p: 5 }}>
+                {alertVisible && (
+                    <Snackbar open={alertVisible} autoHideDuration={3000} onClose={() => setAlertVisible(false)}>
+                        <MuiAlert severity="success" variant="filled">
+                            Form submitted successfully!
+                        </MuiAlert>
+                    </Snackbar>
+                )}
+                {loading && <CircularProgress sx={{ display: 'block', margin: '10px auto' }} />}
                 <form onSubmit={handleAddStudent}>
-                    <div className='row justify-content-center'>
-                        <div className="form-floating mb-3 ps-3 col-5">
-                            <input value={newStudent.Name} name='Name' onChange={handleChange} type="text" className="form-control" id="studentName" placeholder="Student name" />
-                            <label htmlFor="studentName" className='ms-3'>Student name</label>
-                        </div>
-                        <div className="form-floating ps-3 col-5">
-                            <input value={newStudent.email} name='email' onChange={handleChange} type="email" className="form-control" id="studentEmail" placeholder="Email" />
-                            <label htmlFor="studentEmail" className='ms-3'>Email</label>
-                        </div>
-                        <div className="form-floating mb-3 ps-3 col-5">
-                            <input value={newStudent.rollNo} name='rollNo' onChange={handleChange} type="number" className="form-control" id="studentRollNo" placeholder="Roll No." />
-                            <label htmlFor="studentRollNo" className='ms-3'>Roll No.</label>
-                        </div>
-                        <div className="form-floating ps-3 col-5">
-                            <input value={newStudent.Mothername} name='Mothername' onChange={handleChange} type="text" className="form-control" id="motherName" placeholder="Mother's name" />
-                            <label htmlFor="motherName" className='ms-3'>Mother's name</label>
-                        </div>
-                        <div className="form-floating ps-3 mb-3 col-5">
-                            <input value={newStudent.Fathername} name='Fathername' onChange={handleChange} type="text" className="form-control" id="fatherName" placeholder="Father's name" />
-                            <label htmlFor="fatherName" className='ms-3'>Father's name</label>
-                        </div>
-                        <div className="form-floating ps-3 col-5">
-                            <input value={newStudent.Branch} name='Branch' onChange={handleChange} type="text" className="form-control" id="branch" placeholder="Branch" />
-                            <label htmlFor="branch" className='ms-3'>Branch</label>
-                        </div>
-                        <div className="form-floating ps-3 mb-3 col-5">
-                            <input value={newStudent.phoneNo} name='phoneNo' onChange={handleChange} type="tel" className="form-control" id="phoneNo" placeholder="Phone No." />
-                            <label htmlFor="phoneNo" className='ms-3'>Phone No.</label>
-                        </div>
-                        <div className="form-floating ps-3 mb-3 col-5">
-                            <input value={newStudent.DOB} name='DOB' onChange={handleChange} type="date" className="form-control" id="dob" placeholder="Date of Birth" />
-                            <label htmlFor="dob" className='ms-3'>Date of Birth</label>
-                        </div>
-                        <div className="form-floating ps-3 mb-3 col-10">
-                            <textarea value={newStudent.address} name='address' onChange={handleChange} placeholder="Address" className="form-control" id="address" style={{ height: "100px" }}></textarea>
-                            <label htmlFor="address" className='ms-3'>Address</label>
-                        </div>
-                    </div>
-                    <button type="submit" className='w-25 btn btn-outline-danger offset-1' disabled={loading}>Submit</button>
+                    <Typography variant="h5" gutterBottom>
+                        Add Student Details
+                    </Typography>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Student Name"
+                                name="Name"
+                                value={newStudent.Name}
+                                onChange={handleChange}
+                                variant="outlined"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Email"
+                                name="email"
+                                value={newStudent.email}
+                                onChange={handleChange}
+                                variant="outlined"
+                                type="email"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Roll No."
+                                name="rollNo"
+                                value={newStudent.rollNo}
+                                onChange={handleChange}
+                                variant="outlined"
+                                type="number"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Mother's Name"
+                                name="Mothername"
+                                value={newStudent.Mothername}
+                                onChange={handleChange}
+                                variant="outlined"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Father's Name"
+                                name="Fathername"
+                                value={newStudent.Fathername}
+                                onChange={handleChange}
+                                variant="outlined"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Branch"
+                                name="Branch"
+                                value={newStudent.Branch}
+                                onChange={handleChange}
+                                variant="outlined"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Phone No."
+                                name="phoneNo"
+                                value={newStudent.phoneNo}
+                                onChange={handleChange}
+                                variant="outlined"
+                                type="tel"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Date of Birth"
+                                name="DOB"
+                                value={newStudent.DOB}
+                                onChange={handleChange}
+                                variant="outlined"
+                                type="date"
+                                InputLabelProps={{ shrink: true }}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                fullWidth
+                                label="Address"
+                                name="address"
+                                value={newStudent.address}
+                                onChange={handleChange}
+                                variant="outlined"
+                                multiline
+                                rows={4}
+                            />
+                        </Grid>
+                    </Grid>
+                    <Box mt={3}>
+                        <Button type="submit" variant="contained" color="primary" disabled={loading}>
+                            Submit
+                        </Button>
+                    </Box>
                 </form>
-            </section>
+            </Box>
         </Layout>
     );
 }

@@ -1,14 +1,32 @@
-import { onValue, ref, update } from "firebase/database";
+
+import { onValue, ref, get, update } from "firebase/database";
 import React, { useState, useEffect } from "react";
 import { database } from "../firebaseconf";
 import Layout from "../components/layout";
 import Alert from "../components/alert";
 import Preloader from "../components/preloader";
 import Header from "../components/header";
+import {
+    Box,
+    Button,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TextField,
+    Typography,
+    Paper,
+    useMediaQuery,
+    useTheme,
+} from "@mui/material";
 
 export default function Sessionals() {
-    // subject stands for sessionals
-
     const [data, setData] = useState(null);
     const [sessionals, setsessionals] = useState({});
     const [alertVisible, setAlertVisible] = useState(false);
@@ -18,6 +36,10 @@ export default function Sessionals() {
     const [subjects, setSubjects] = useState([]);
     const [selectedSubject, setSelectedSubject] = useState('');
     const [sessionalsubjects, setSessionalSubjects] = useState([]);
+
+    const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
     useEffect(() => {
         const subjectsRef = ref(database, 'sessionals');
         onValue(subjectsRef, (snapshot) => {
@@ -37,8 +59,7 @@ export default function Sessionals() {
                 setSessionalSubjects(data);
             });
         }
-    },
-        [selectedSemester, selectedSubject]); // to run on change in semester feild
+    }, [selectedSemester, selectedSubject]);
 
     useEffect(() => {
         if (selectedSemester) {
@@ -53,14 +74,25 @@ export default function Sessionals() {
             });
         }
     }, [selectedSemester]);
-
-    const handlesessionalsChange = (subject, rollNo, value) => {
+    const checksubject = (key) => {
+        return key.replace(/[./#$\[\]]/g, '_');
+    };
+    const handlesessionalsChange = (subject, id, value) => {
+        const checkedsub = checksubject(subject);
         setsessionals((prev) => ({
             ...prev,
-            [rollNo]: {
-                ...(prev[rollNo]),
-                [subject]: value,
-            },
+            [id]: {
+                ...(prev[id]),
+                sessional: {
+                    [selectedSemester]: {
+                        ...(prev[id]?.sessional?.[selectedSemester]),
+                        [selectedSubject]: {
+                            ...(prev[id]?.sessional?.[selectedSemester]?.[selectedSubject]),
+                            [checkedsub]: value,
+                        }
+                    }
+                }
+            }
         }));
     };
 
@@ -75,22 +107,34 @@ export default function Sessionals() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        try {
-            const sessionalsdata = {};
-            Object.values(data).forEach((student) => {
-                const rollNo = student.rollNo;
-                if (sessionals[rollNo]) {
-                    sessionalsdata[rollNo] = {
-                        ...sessionals[rollNo],
-                    };
-                }
-            });
 
-            const sessionalRef = ref(database, `sessionalsMarks/${selectedSemester}/${selectedSubject}`);
-            await update(sessionalRef, sessionalsdata);
+        try {
+            for (const studentId of Object.keys(data)) {
+                const studentRef = ref(database, `students/${studentId}`);
+
+                const studentDataSnapshot = await get(studentRef);
+                const studentData = studentDataSnapshot.val();
+
+                if (studentData) {
+                    const updatedStudentData = {
+                        ...studentData,
+                        sessional: {
+                            ...(studentData?.sessional || {}),
+                            [selectedSemester]: {
+                                ...(studentData?.sessional?.[selectedSemester] || {}),
+                                [selectedSubject]: sessionals[studentId]?.sessional?.[selectedSemester]?.[selectedSubject] || {},
+                            }
+                        }
+                    };
+
+                    await update(studentRef, updatedStudentData);
+                }
+            }
 
             setAlertVisible(true);
             setTimeout(() => setAlertVisible(false), 3000);
+
+            setTimeout(() => window.location.reload(), 3500);
         } catch (error) {
             console.error("Error updating sessionals:", error);
         } finally {
@@ -101,99 +145,117 @@ export default function Sessionals() {
     return (
         <Layout>
             <Header title="Update Student Sessionals" />
-            <section className="col-12 pt-5">
-                <div className="row justify-content-center">
+            <Box sx={{ p: 2 }}>
+                {alertVisible && <Alert message="Form submitted successfully!" />}
+                {loading && <Preloader />}
 
-                    {alertVisible && <Alert message="Form submitted successfully!" />}
-                    {loading && <Preloader />}
-                    <div className="form-group form-floating col-5 ms-3">
-                        <select aria-label="Floating label select example" required id="semester" className="form-select" value={selectedSemester} onChange={(e) =>
-                            setSelectedSemester(e.target.value)
-                        }>
-                            <option value="" selected>
-                                -----------
-                            </option>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: isSmallScreen ? 'column' : 'row',
+                        justifyContent: 'start',
+                        gap: 5,
+                        mb: 3,
+                    }}
+                >
+                    <FormControl fullWidth={isSmallScreen} sx={{ minWidth: 200 }}>
+                        <InputLabel id="semester-label">Select Semester</InputLabel>
+                        <Select
+                            labelId="semester-label"
+                            id="semester"
+                            value={selectedSemester}
+                            onChange={(e) => setSelectedSemester(e.target.value)}
+                            required
+                        >
+                            <MenuItem value="">
+                                <em>None</em>
+                            </MenuItem>
                             {semesters.map((semester) => (
-                                <option key={semester} value={semester}>
+                                <MenuItem key={semester} value={semester}>
                                     {semester}
-                                </option>
+                                </MenuItem>
                             ))}
-                        </select>
-                        <label htmlFor="floatingSelect">Select Semester:</label>
-                    </div>
+                        </Select>
+                    </FormControl>
 
-                    {Object.keys(subjects).length > 0 ? (
-                        <div className="form-group form-floating col-5 ms-3">
-                            <select required id="subject floatingSelect" className="form-select" aria-label="Floating label select example" value={selectedSubject} onChange={
-                                (e) => setSelectedSubject(e.target.value)
-                            } >
-                                <option value="">
-                                    -----------
-                                </option>
+                    {subjects.length > 0 && (
+                        <FormControl fullWidth={isSmallScreen} sx={{ minWidth: 200 }}>
+                            <InputLabel id="subject-label">Select Subject</InputLabel>
+                            <Select
+                                labelId="subject-label"
+                                id="subject"
+                                value={selectedSubject}
+                                onChange={(e) => setSelectedSubject(e.target.value)}
+                                required
+                            >
+                                <MenuItem value="">
+                                    <em>None</em>
+                                </MenuItem>
                                 {subjects.map((subject) => (
-                                    <option key={subject.id} value={subject.subject}>
+                                    <MenuItem key={subject} value={subject}>
                                         {subject}
-                                    </option>
+                                    </MenuItem>
                                 ))}
-                            </select>
-                            <label htmlFor="floatingSelect">Select sessionals:</label>
-                        </div>
-                    ) : (
-                        null)}
-                    <form onSubmit={handleSubmit} className="col-10 mt-4">
-                        <div className="row justify-content-center ms-3">
-                            {selectedSubject ? <table className="table table-hover table-responsive">
-                                <thead className="table-light">
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Name</th>
-                                        <th>Roll No</th>
-                                        {Object.values(sessionalsubjects).map((sub) => (
+                            </Select>
+                        </FormControl>
+                    )}
+                </Box>
 
-                                            <th key={sub.id}>{sub.subject}</th>
-                                        )
-                                        )}
-                                    </tr>
-                                </thead>
-                                <tbody>
+                {selectedSubject && (
+                    <Box component="form" onSubmit={handleSubmit}>
+                        <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>#</TableCell>
+                                        <TableCell>Name</TableCell>
+                                        <TableCell>Roll No</TableCell>
+                                        {Object.values(sessionalsubjects).map((sub, idx) => (
+                                            <TableCell key={idx}>{sub.subject}</TableCell>
+                                        ))}
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
                                     {data ? (
                                         Object.keys(data).map((key, index) => (
-                                            <tr key={key.id}>
-                                                <td>{index + 1}</td>
-                                                <td>{data[key].Name}</td>
-                                                <td>{data[key].rollNo}</td>
-                                                {Object.values(sessionalsubjects).map((sub) => (
-                                                    <td>
-                                                        <input
+                                            <TableRow key={key}>
+                                                <TableCell>{index + 1}</TableCell>
+                                                <TableCell>{data[key].Name}</TableCell>
+                                                <TableCell>{data[key].rollNo}</TableCell>
+                                                {Object.values(sessionalsubjects).map((sub, idx) => (
+                                                    <TableCell key={idx}>
+                                                        <TextField
                                                             type="number"
-                                                            className="form-control"
+                                                            variant="outlined"
+                                                            size="small"
+                                                            fullWidth={isSmallScreen}
                                                             onChange={(e) =>
-                                                                handlesessionalsChange(sub.subject, data[key].rollNo, e.target.value)
+                                                                handlesessionalsChange(sub.subject, key, e.target.value)
                                                             }
 
                                                         />
-                                                    </td>
+                                                    </TableCell>
                                                 ))}
-
-                                            </tr>
+                                            </TableRow>
                                         ))
                                     ) : (
-                                        <tr>
-                                            <td colSpan="7" className="text-center">
+                                        <TableRow>
+                                            <TableCell colSpan={3} align="center">
                                                 Loading data...
-                                            </td>
-                                        </tr>
+                                            </TableCell>
+                                        </TableRow>
                                     )}
-                                </tbody>
-                                <button type="submit" className="btn btn-outline-danger offset-1 ">
-                                    Submit
-                                </button>
-                            </table>
-                                : null}
-                        </div>
-                    </form>
-                </div>
-            </section>
-        </Layout >
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-start', mt: 2 }}>
+                            <Button variant="contained" color="primary" type="submit">
+                                Submit
+                            </Button>
+                        </Box>
+                    </Box>
+                )}
+            </Box>
+        </Layout>
     );
 }

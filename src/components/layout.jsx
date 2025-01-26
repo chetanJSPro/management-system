@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import MuiDrawer from '@mui/material/Drawer';
+import { useMediaQuery, Box, CssBaseline, Drawer as MuiDrawer, Button } from '@mui/material';
 import MuiAppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
@@ -22,11 +21,10 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import logo from "../assets/images/logo.png";
-import { Button, CssBaseline } from '@mui/material';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
 import PublishIcon from '@mui/icons-material/Publish';
+import logo from "../assets/images/logo.png";
 
 const drawerWidth = 240;
 
@@ -50,14 +48,6 @@ const closedMixin = (theme) => ({
         width: `calc(${theme.spacing(9)} + 1px)`,
     },
 });
-
-const DrawerHeader = styled('div')(({ theme }) => ({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar,
-}));
 
 const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'open',
@@ -94,9 +84,24 @@ const Drawer = styled(MuiDrawer, {
     }),
 }));
 
+const DrawerHeader = styled('div')(({ theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: theme.spacing(0, 1),
+    ...theme.mixins.toolbar,
+}));
+
 export default function Layout({ children }) {
     const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm')); // Detect small screens
     const [open, setOpen] = useState(false);
+    const [expandedMenu, setExpandedMenu] = useState({
+        editStudents: false,
+        updateMarks: false,
+        updateAttendance: false,
+    });
+
     const [expandedEditStudents, setExpandedEditStudents] = useState(false);
     const [expandedUpdateMarks, setExpandedUpdateMarks] = useState(false);
     const [expandedUpdateAttendance, setExpandedUpdateAttendance] = useState(false);
@@ -128,7 +133,12 @@ export default function Layout({ children }) {
         setExpandedUpdateAttendance(false);
     };
 
-    const navItems = ['Home', 'About', 'Contact'];
+    const toggleMenu = (menu) => {
+        setExpandedMenu({
+            ...expandedMenu,
+            [menu]: !expandedMenu[menu],
+        });
+    };
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -146,119 +156,230 @@ export default function Layout({ children }) {
                     </IconButton>
                     <img src={logo} height={60} alt="" />
                     <Typography variant="h6" noWrap component="div">
+                        Responsive Sidebar
                     </Typography>
-                    <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-                        {navItems.map((item) => (
-                            <Button key={item} sx={{ color: '#000' }}>
-                                {item}
-                            </Button>
-                        ))}
-                    </Box>
                 </Toolbar>
             </AppBar>
-            <Drawer variant="permanent" open={open}>
-                <DrawerHeader>
-                    <IconButton onClick={handleDrawerClose}>
-                        {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-                    </IconButton>
-                </DrawerHeader>
-                <Divider />
-                <List>
-                    <ListItem button component="a" href="/home">
-                        <ListItemIcon>
-                            <DashboardIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Dashboard" />
-                    </ListItem>
-                    <ListItem button component="a" href="/assignment">
-                        <ListItemIcon>
-                            <ReceiptIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Assignments" />
-                    </ListItem>
+            {isSmallScreen ? (
+                <MuiDrawer
+                    variant="temporary"
+                    open={open}
+                    onClose={handleDrawerClose}
+                    sx={{
+                        '& .MuiDrawer-paper': {
+                            width: drawerWidth,
+                            boxSizing: 'border-box',
+                        },
+                    }}
+                >
+                    <DrawerHeader>
+                        <IconButton onClick={handleDrawerClose}>
+                            {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+                        </IconButton>
+                    </DrawerHeader>
+                    <Divider />
+                    <List>
+                        <ListItem button component="a" href="/home">
+                            <ListItemIcon>
+                                <DashboardIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Dashboard" />
+                        </ListItem>
+                        <ListItem button component="a" href="/assignment">
+                            <ListItemIcon>
+                                <ReceiptIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Assignments" />
+                        </ListItem>
 
-                    <ListItem button component="a" href="/check-assignment">
-                        <ListItemIcon>
-                            <FactCheckIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Check Assignments" />
-                    </ListItem>
+                        <ListItem button component="a" href="/check-assignment">
+                            <ListItemIcon>
+                                <FactCheckIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Check Assignments" />
+                        </ListItem>
 
-                    <ListItem button component="a" href="/submit-assignment">
-                        <ListItemIcon>
-                            <PublishIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Submit Assignments" />
-                    </ListItem>
+                        <ListItem button component="a" href="/submit-assignment">
+                            <ListItemIcon>
+                                <PublishIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Submit Assignments" />
+                        </ListItem>
 
-                    <ListItem button component="a" href="/check-attendence">
-                        <ListItemIcon>
-                            <EventAvailableIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Check Attendance" />
-                    </ListItem>
+                        <ListItem button component="a" href="/check-attendence">
+                            <ListItemIcon>
+                                <EventAvailableIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Check Attendance" />
+                        </ListItem>
 
-                    {/* Edit Students Dropdown */}
-                    <ListItem button onClick={toggleEditStudentsMenu}>
-                        <ListItemIcon>
-                            <EditIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Edit Students" />
-                        {expandedEditStudents ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                    </ListItem>
-                    <Collapse in={expandedEditStudents} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            <ListItem button component="a" href="/StudentForm">
-                                <ListItemText primary="Add Students" />
-                            </ListItem>
-                            <ListItem button>
-                                <ListItemText primary="Remove Students" />
-                            </ListItem>
-                            <ListItem button>
-                                <ListItemText primary="Edit Students" />
-                            </ListItem>
-                        </List>
-                    </Collapse>
+                        {/* Edit Students Dropdown */}
+                        <ListItem button onClick={toggleEditStudentsMenu}>
+                            <ListItemIcon>
+                                <EditIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Edit Students" />
+                            {expandedEditStudents ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                        </ListItem>
+                        <Collapse in={expandedEditStudents} timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding>
+                                <ListItem button component="a" href="/StudentForm">
+                                    <ListItemText primary="Add Students" />
+                                </ListItem>
+                                <ListItem button>
+                                    <ListItemText primary="Remove Students" />
+                                </ListItem>
+                                <ListItem button>
+                                    <ListItemText primary="Edit Students" />
+                                </ListItem>
+                            </List>
+                        </Collapse>
 
-                    {/* Update Marks Dropdown */}
-                    <ListItem button onClick={toggleUpdateMarksMenu}>
-                        <ListItemIcon>
-                            <AssignmentIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Update Marks" />
-                        {expandedUpdateMarks ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                    </ListItem>
-                    <Collapse in={expandedUpdateMarks} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            <ListItem button component="a" href="/sessional">
-                                <ListItemText primary="Sessional Marks" />
-                            </ListItem>
-                            <ListItem button component="a" href="/Updatemarks">
-                                <ListItemText primary="Final Exam Marks" />
-                            </ListItem>
-                        </List>
-                    </Collapse>
+                        {/* Update Marks Dropdown */}
+                        <ListItem button onClick={toggleUpdateMarksMenu}>
+                            <ListItemIcon>
+                                <AssignmentIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Update Marks" />
+                            {expandedUpdateMarks ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                        </ListItem>
+                        <Collapse in={expandedUpdateMarks} timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding>
+                                <ListItem button component="a" href="/sessional">
+                                    <ListItemText primary="Sessional Marks" />
+                                </ListItem>
+                                <ListItem button component="a" href="/Updatemarks">
+                                    <ListItemText primary="Final Exam Marks" />
+                                </ListItem>
+                            </List>
+                        </Collapse>
 
-                    {/* Update Attendance Dropdown */}
-                    <ListItem button onClick={toggleUpdateAttendanceMenu}>
-                        <ListItemIcon>
-                            <AccessTimeIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Update Attendance" />
-                        {expandedUpdateAttendance ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                    </ListItem>
-                    <Collapse in={expandedUpdateAttendance} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            <ListItem button component="a" href="/addAttendence">
-                                <ListItemText primary="Add / Update" />
-                            </ListItem>
-                            <ListItem button>
-                                <ListItemText primary="Bulk Update" />
-                            </ListItem>
-                        </List>
-                    </Collapse>
-                </List>
-            </Drawer>
+                        {/* Update Attendance Dropdown */}
+                        <ListItem button onClick={toggleUpdateAttendanceMenu}>
+                            <ListItemIcon>
+                                <AccessTimeIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Update Attendance" />
+                            {expandedUpdateAttendance ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                        </ListItem>
+                        <Collapse in={expandedUpdateAttendance} timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding>
+                                <ListItem button component="a" href="/addAttendence">
+                                    <ListItemText primary="Add / Update" />
+                                </ListItem>
+                                <ListItem button>
+                                    <ListItemText primary="Bulk Update" />
+                                </ListItem>
+                            </List>
+                        </Collapse>
+                    </List>
+                </MuiDrawer>
+            ) : (
+                <Drawer variant="permanent" open={open}>
+                    <DrawerHeader>
+                        <IconButton onClick={handleDrawerClose}>
+                            {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+                        </IconButton>
+                    </DrawerHeader>
+                    <Divider />
+
+                    <List>
+                        <ListItem button component="a" href="/home">
+                            <ListItemIcon>
+                                <DashboardIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Dashboard" />
+                        </ListItem>
+                        <ListItem button component="a" href="/assignment">
+                            <ListItemIcon>
+                                <ReceiptIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Assignments" />
+                        </ListItem>
+
+                        <ListItem button component="a" href="/check-assignment">
+                            <ListItemIcon>
+                                <FactCheckIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Check Assignments" />
+                        </ListItem>
+
+                        <ListItem button component="a" href="/submit-assignment">
+                            <ListItemIcon>
+                                <PublishIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Submit Assignments" />
+                        </ListItem>
+
+                        <ListItem button component="a" href="/check-attendence">
+                            <ListItemIcon>
+                                <EventAvailableIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Check Attendance" />
+                        </ListItem>
+
+                        {/* Edit Students Dropdown */}
+                        <ListItem button onClick={toggleEditStudentsMenu}>
+                            <ListItemIcon>
+                                <EditIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Edit Students" />
+                            {expandedEditStudents ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                        </ListItem>
+                        <Collapse in={expandedEditStudents} timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding>
+                                <ListItem button component="a" href="/StudentForm">
+                                    <ListItemText primary="Add Students" />
+                                </ListItem>
+                                <ListItem button>
+                                    <ListItemText primary="Remove Students" />
+                                </ListItem>
+                                <ListItem button>
+                                    <ListItemText primary="Edit Students" />
+                                </ListItem>
+                            </List>
+                        </Collapse>
+
+                        {/* Update Marks Dropdown */}
+                        <ListItem button onClick={toggleUpdateMarksMenu}>
+                            <ListItemIcon>
+                                <AssignmentIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Update Marks" />
+                            {expandedUpdateMarks ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                        </ListItem>
+                        <Collapse in={expandedUpdateMarks} timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding>
+                                <ListItem button component="a" href="/sessional">
+                                    <ListItemText primary="Sessional Marks" />
+                                </ListItem>
+                                <ListItem button component="a" href="/Updatemarks">
+                                    <ListItemText primary="Final Exam Marks" />
+                                </ListItem>
+                            </List>
+                        </Collapse>
+
+                        {/* Update Attendance Dropdown */}
+                        <ListItem button onClick={toggleUpdateAttendanceMenu}>
+                            <ListItemIcon>
+                                <AccessTimeIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Update Attendance" />
+                            {expandedUpdateAttendance ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                        </ListItem>
+                        <Collapse in={expandedUpdateAttendance} timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding>
+                                <ListItem button component="a" href="/addAttendence">
+                                    <ListItemText primary="Add / Update" />
+                                </ListItem>
+                                <ListItem button>
+                                    <ListItemText primary="Bulk Update" />
+                                </ListItem>
+                            </List>
+                        </Collapse>
+                    </List>
+                </Drawer>
+            )}
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
                 {children}
